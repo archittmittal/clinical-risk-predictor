@@ -1,15 +1,19 @@
 # 🏥 Clinical Risk Predictor
+**A Praxis 2.0 Submission: GenAI + Machine Learning Innovation Showcase**
 
-**An AI-driven preventive care decision support system for diabetes and chronic disease risk stratification.**
-
-*Built for Praxis Hackathon 2025 - Submission Deadline: Feb 10, 2025*
+> **Theme**: Healthcare | Preventive Medicine | Human-AI Collaboration
 
 ---
 
-## 📋 Problem Statement
+## 🏆 Praxis 2.0 Overview
+**Praxis 2.0** is a GenAI + Machine Learning innovation showcase where we design and build functional prototypes addressing real-world challenges. This project demonstrates:
+1.  **Machine Learning**: For risk prediction and stratification.
+2.  **Generative AI**: For reasoning, explanation, and patient-friendly insights.
+3.  **Human-Centric Design**: Prioritizing clinical relevance and usability.
 
-### Theme
-Healthcare | Preventive Medicine | Human-AI Collaboration
+---
+
+## 📋 Problem Statement (Track 1)
 
 ### Context
 Chronic diseases such as diabetes often develop silently. By the time symptoms appear, interventions become costly and outcomes worsen. Clinicians operate under time pressure, limited historical data, and uncertainty—while patients struggle to understand probabilistic health risks.
@@ -22,6 +26,33 @@ Design a clinical decision support workflow that helps surface early risk signal
 - **Identify key contributing factors and modifiable drivers**
 - **Communicate findings differently for clinicians and patients**
 - **Suggest next-step actions (tests, lifestyle changes, follow-ups)**
+
+---
+
+## 📦 Expected Deliverables
+We are targeting the following deliverables for the final showcase:
+
+1.  **Public GitHub Repository**: Complete source code with architectural documentation.
+2.  **Working Prototype**: Full-stack application (FastAPI + React) demonstrating the dashboard and patient portal.
+3.  **Demo Video**: A walkthrough explaining the problem, solution, and key insights.
+4.  **Documentation**:
+    - [Model Card](./docs/MODEL_CARD.md): Details on ML models, metrics, and data.
+    - [Ethics & Limitations](./docs/ETHICS_AND_LIMITATIONS.md): Bias considerations and safety guardrails.
+    - [Architecture](./docs/ARCHITECTURE.md): Integration of ML + GenAI.
+
+---
+
+## 📊 Data, Modeling & Reasoning
+**Dataset**: We are using the curated [diabetes_dataset.csv](./data/diabetes_dataset.csv) provided by the hackathon.
+
+**Approach**:
+*   **Machine Learning**: We apply techniques like XGBoost/Logistic Regression for *prediction* and *classification* of risk levels.
+*   **Generative AI**: We utilize **Gemini/Open-source LLMs** to:
+    *   Summarize complex clinical data into plain language.
+    *   Generate "what-if" counterfactual scenarios (Reasoning).
+    *   Draft personalized lifestyle action plans.
+
+---
 
 ### Open Design Space
 Teams may explore:
@@ -270,13 +301,13 @@ python train.py
 
 ---
 
-## 🎓 Evaluation Criteria
+## 🎓 Evaluation Criteria (Praxis 2.0 Values)
+We align our development with the core values of the showcase:
 
-- **Clinical Relevance**: Insights align with real-world preventive care workflows
-- **Explainability**: Clear, trustworthy explanations for doctors & patients
-- **Usability**: Dashboard is intuitive & fits OPD workflow
-- **Code Quality**: Well-organized, documented, tested
-- **Completeness**: Working end-to-end demo
+1.  **Thoughtful Problem Framing**: Addressing the core user needs of both clinicians (efficiency) and patients (understanding).
+2.  **Sound Technical Reasoning**: Using appropriate ML metrics (AUC-ROC, calibration) and validating risk scores.
+3.  **Responsible Use of AI**: Implementing bias checks, confidence intervals, and limitations documentation.
+4.  **Clear Communication of Insights**: Translating complex model outputs into actionable, human-understandable guidance using GenAI.
 
 ---
 
