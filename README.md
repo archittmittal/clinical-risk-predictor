@@ -299,25 +299,97 @@ flowchart TB
 ### Interaction Sequence
 ```mermaid
 sequenceDiagram
-    participant U as Clinician
-    participant F as Frontend
-    participant B as Backend
-    participant M as ML Model
-    participant L as BioMistral AI
+    autonumber
+    actor Clinician as 👨‍⚕️ Clinician
+    participant UI as ⚛️ React UI
+    participant API as 🔌 API Gateway
+    participant Risk as 🧠 Risk Engine
+    participant SHAP as 📊 SHAP
+    participant LLM as 🤖 BioMistral
+    participant History as 💾 History DB
+    participant Cohort as 👥 Cohort Engine
+    participant PopDB as 📚 Population DB
     
-    U->>F: Enters Patient Data
-    F->>B: POST /predict
-    B->>M: Predict Risk & Explain
-    M-->>B: Risk Score, SHAP Values
-    B-->>F: Return Prediction Results
-    F-->>U: Display Risk Gauge & Charts
+    %% Scenario 1: Initial Risk Assessment
+    rect rgb(230, 245, 255)
+        Note over Clinician,PopDB: Scenario 1: Initial Risk Assessment
+        Clinician->>+UI: Enter patient vitals<br/>(Age, BMI, Glucose, etc.)
+        UI->>UI: Validate input fields
+        UI->>+API: POST /predict<br/>{patient_data}
+        API->>+Risk: Load SOTA ensemble model
+        Risk->>Risk: Feature engineering<br/>(interactions, scaling)
+        Risk->>Risk: Predict with XGBoost+LGBM+CatBoost
+        Risk->>+SHAP: Calculate feature importance
+        SHAP-->>-Risk: SHAP values array
+        Risk-->>-API: {risk_score: 0.73,<br/>risk_level: "High",<br/>shap_values: {...}}
+        API->>+History: Save assessment record
+        History-->>-API: Saved with timestamp
+        API-->>-UI: Return prediction results
+        UI->>UI: Render risk gauge (73%)
+        UI->>UI: Display SHAP bar chart
+        UI-->>-Clinician: Show risk dashboard
+    end
     
-    U->>F: Click "Generate Report"
-    F->>B: POST /report (w/ Vitals)
-    B->>L: Generate Clinical Summary
-    L-->>B: Return Natural Language Text
-    B-->>F: Return Report JSON
-    F-->>U: Display AI Report
+    %% Scenario 2: What-If Simulation
+    rect rgb(245, 255, 245)
+        Note over Clinician,PopDB: Scenario 2: What-If Simulation
+        Clinician->>+UI: Adjust BMI slider (-5 kg/m²)
+        UI->>UI: Debounce input (500ms)
+        UI->>+API: POST /simulate<br/>{original_data, modifications}
+        API->>+Risk: Predict with modified features
+        Risk-->>-API: {new_risk: 0.58,<br/>original_risk: 0.73,<br/>reduction: 0.15}
+        API-->>-UI: Return simulation results
+        UI->>UI: Animate risk gauge<br/>73% → 58%
+        UI-->>-Clinician: Show "15% risk reduction"
+    end
+    
+    %% Scenario 3: AI Report Generation
+    rect rgb(255, 245, 230)
+        Note over Clinician,PopDB: Scenario 3: AI Clinical Report
+        Clinician->>+UI: Click "Generate Report"
+        UI->>+API: POST /report<br/>{patient_id}
+        API->>+History: Fetch patient history
+        History-->>-API: Last 10 assessments
+        API->>API: Build clinical prompt<br/>(demographics + trends)
+        API->>+LLM: Generate summary<br/>(BioMistral-7B inference)
+        Note right of LLM: ~3-5 seconds<br/>for local LLM
+        LLM-->>-API: Natural language report
+        API->>API: Parse & structure response
+        API-->>-UI: {report: "Patient shows...",<br/>pdf_url: "/reports/123.pdf"}
+        UI->>UI: Display formatted report
+        UI-->>-Clinician: Show AI summary + PDF link
+    end
+    
+    %% Scenario 4: Cohort Analysis
+    rect rgb(255, 240, 245)
+        Note over Clinician,PopDB: Scenario 4: Population Comparison
+        UI->>+API: GET /cohort/analysis<br/>{patient_profile}
+        API->>+Cohort: Calculate percentiles
+        Cohort->>+PopDB: Query population stats
+        PopDB-->>-Cohort: Age/BMI/HbA1c distributions
+        Cohort-->>-API: {percentiles: {age: 67, bmi: 82}}
+        API->>+Cohort: Find digital twins (K-NN)
+        Cohort->>+PopDB: Query similar patients (k=5)
+        PopDB-->>-Cohort: 5 nearest neighbors
+        Cohort-->>-API: {twins: [{age: 54, outcome: 1}...]}
+        API-->>-UI: Return cohort data
+        UI->>UI: Render percentile cards
+        UI->>UI: Display twins table
+        UI-->>Clinician: Show population context
+    end
+    
+    %% Scenario 5: Longitudinal Tracking
+    rect rgb(248, 245, 255)
+        Note over Clinician,PopDB: Scenario 5: Risk Velocity Analysis
+        UI->>+API: GET /history?limit=10
+        API->>+History: Query time series
+        History-->>-API: Last 10 assessments
+        API->>API: Calculate risk velocity<br/>(Δ risk / Δ time)
+        API-->>-UI: {history: [...],<br/>velocity: +0.05/week,<br/>status: "Warning"}
+        UI->>UI: Render trend chart
+        UI->>UI: Show velocity badge
+        UI-->>Clinician: Display longitudinal view
+    end
 ```
 
 ---
