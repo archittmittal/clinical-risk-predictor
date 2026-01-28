@@ -121,13 +121,71 @@ def train_model():
     # 7. Evaluate
     print("Evaluating...")
     y_prob = pipeline.predict_proba(X_test_processed)[:, 1]
+    y_pred = pipeline.predict(X_test_processed)
     
+    # Import additional metrics
+    from sklearn.metrics import (
+        accuracy_score, precision_score, recall_score, f1_score,
+        confusion_matrix, classification_report
+    )
+    
+    # Calculate metrics
     brier = brier_score_loss(y_test, y_prob)
     roc_auc = roc_auc_score(y_test, y_prob)
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)  # Same as Sensitivity
+    f1 = f1_score(y_test, y_pred)
     
-    print(f"\n--- Metrics ---")
-    print(f"Brier Score: {brier:.4f}")
-    print(f"ROC AUC:     {roc_auc:.4f}")
+    # Confusion Matrix
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+    specificity = tn / (tn + fp)
+    sensitivity = recall  # Sensitivity = Recall = True Positive Rate
+    
+    # Print comprehensive metrics
+    print(f"\n{'='*60}")
+    print(f"{'COMPREHENSIVE MODEL EVALUATION METRICS':^60}")
+    print(f"{'='*60}\n")
+    
+    print(f"📊 DISCRIMINATION METRICS")
+    print(f"{'─'*60}")
+    print(f"  ROC AUC Score:        {roc_auc:.4f} ({roc_auc*100:.2f}%)")
+    print(f"  Accuracy:             {accuracy:.4f} ({accuracy*100:.2f}%)")
+    print()
+    
+    print(f"🎯 CLASSIFICATION METRICS")
+    print(f"{'─'*60}")
+    print(f"  Precision:            {precision:.4f} ({precision*100:.2f}%)")
+    print(f"  Recall/Sensitivity:   {recall:.4f} ({recall*100:.2f}%)")
+    print(f"  Specificity:          {specificity:.4f} ({specificity*100:.2f}%)")
+    print(f"  F1 Score:             {f1:.4f}")
+    print()
+    
+    print(f"📈 CALIBRATION METRICS")
+    print(f"{'─'*60}")
+    print(f"  Brier Score:          {brier:.4f}")
+    print()
+    
+    print(f"🔢 CONFUSION MATRIX")
+    print(f"{'─'*60}")
+    print(f"  True Negatives (TN):  {tn:,}")
+    print(f"  False Positives (FP): {fp:,}")
+    print(f"  False Negatives (FN): {fn:,}")
+    print(f"  True Positives (TP):  {tp:,}")
+    print()
+    
+    print(f"💡 INTERPRETATION")
+    print(f"{'─'*60}")
+    print(f"  Total Test Samples:   {len(y_test):,}")
+    print(f"  Correct Predictions:  {tp + tn:,}")
+    print(f"  Incorrect Predictions: {fp + fn:,}")
+    print(f"{'='*60}\n")
+    
+    # Detailed classification report
+    print("📋 DETAILED CLASSIFICATION REPORT")
+    print(f"{'─'*60}")
+    print(classification_report(y_test, y_pred, target_names=['No Diabetes', 'Diabetes'], digits=4))
+    print(f"{'='*60}\n")
     
     # 8. Save
     os.makedirs(MODEL_DIR, exist_ok=True)
