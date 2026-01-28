@@ -178,7 +178,7 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
 
             {/* 4. Explainability Details */}
             <SectionCard title="Model Explainability" subtitle="SHAP (SHapley Additive exPlanations) values indicating feature impact.">
-                <ShapExplainer shapValues={prediction.shap_values || {}} />
+                <ShapExplainer explanations={prediction.explanations || []} />
             </SectionCard>
 
             {/* FHIR Modal Overlay */}
