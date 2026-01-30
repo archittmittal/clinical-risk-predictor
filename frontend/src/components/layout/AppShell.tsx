@@ -1,5 +1,6 @@
 import React, { type ReactNode, useState } from 'react';
 import { Activity, HelpCircle, User, Menu, LogOut, ChevronDown } from 'lucide-react';
+import Support from '../Support';
 
 interface AppShellProps {
     children: ReactNode;
@@ -9,6 +10,7 @@ interface AppShellProps {
 
 const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout }) => {
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [showSupport, setShowSupport] = useState(false);
 
     const getInitials = (name: string) => {
         return name
@@ -43,12 +45,21 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout }) => {
                     <div className="flex items-center gap-4">
                         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
                             <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a>
-                            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</a>
+                            <button 
+                              onClick={() => setShowSupport(true)}
+                              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                              Support
+                            </button>
                         </nav>
 
                         <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden md:block" />
 
-                        <button className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors" aria-label="Help">
+                        <button 
+                          onClick={() => setShowSupport(true)}
+                          className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors" 
+                          aria-label="Help"
+                        >
                             <HelpCircle size={20} />
                         </button>
 
@@ -119,6 +130,9 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout }) => {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
                 {children}
             </main>
+
+            {/* Support Modal */}
+            <Support isOpen={showSupport} onClose={() => setShowSupport(false)} />
         </div>
     );
 };
