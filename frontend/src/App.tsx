@@ -7,7 +7,7 @@ import Signup from './components/Signup';
 import AuditLog from './components/AuditLog'; // Restore
 import StoryPage from './components/StoryPage'; // New
 import { type PredictionResponse, type PredictionInput } from './api/client';
-import { Activity, Stethoscope, LineChart, Brain } from 'lucide-react';
+import { Stethoscope, Brain } from 'lucide-react';
 import DigitalTwinModel from './components/DigitalTwinModel';
 
 interface User {
