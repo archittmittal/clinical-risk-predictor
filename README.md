@@ -83,7 +83,7 @@
 
 | Component | Status | URL |
 |:----------|:-------|:----|
-| **Backend API** | 🟢 Live | [Hugging Face Spaces](https://huggingface.co/spaces/purvansh01/astramed-bd) |
+| **Backend API** | 🟢 Live | [Hugging Face Spaces](https://huggingface.co/spaces/purvansh01/astramed-backend/tree/main) |
 | **Frontend App** | 🟢 Live | [Vercel App](https://clinical-risk-predictor-nine.vercel.app/) |
 
 > **Interactive Demo**: Visit the **Backend API** link to explore the Swagger documentation and test the model inference directly.
