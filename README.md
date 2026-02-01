@@ -4,14 +4,12 @@
 # 🏥 𝐀𝐬𝐭𝐫𝐚𝐌𝐞𝐝: 𝐂𝐥𝐢𝐧𝐢𝐜𝐚𝐥 𝐑𝐢𝐬𝐤 𝐀𝐈
 ### *Next-Generation Predictive Analytics & Decision Support System*
 
-[![Hugging Face Spaces](https://img.shields.io/badge/🤗%20Hugging%20Face-Backend%20Live-yellow?style=for-the-badge)](https://huggingface.co/spaces/purvansh01/astramed-bd)
+[![Hugging Face Spaces](https://img.shields.io/badge/🤗%20Hugging%20Face-Backend%20Live-yellow?style=for-the-badge)](https://huggingface.co/spaces/purvansh01/astramed-backend)
 [![Vercel Deployment](https://img.shields.io/badge/▲%20Vercel-Frontend%20Live-black?style=for-the-badge)](https://clinical-risk-predictor-nine.vercel.app/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 [![Praxis 2.0](https://img.shields.io/badge/Submission-Praxis%202.0-blueviolet?style=for-the-badge)](https://github.com)
 
-**AstraMed** represents a paradigm shift in preventive medicine, combining **State-of-the-Art (SOTA) Machine Learning** with a **"Neo-Medical" Glassmorphism UI** to deliver interpreting, accurate, and actionable health insights.
-
-[**Explore Live App**](https://clinical-risk-predictor-nine.vercel.app/) | [**Test API Engine**](https://huggingface.co/spaces/purvansh01/astramed-backend) | [**View Code**](https://github.com/purvanshjoshi/clinical-risk-predictor)
+**AstraMed** represents a paradigm shift in[**Explore Live App**](https://clinical-risk-predictor-nine.vercel.app/) | [**Test API Engine**](https://huggingface.co/spaces/purvansh01/astramed-backend/docs) | [**View Code**](https://github.com/purvanshjoshi/clinical-risk-predictor)
 
 </div>
 
@@ -81,12 +79,13 @@
 
 <div align="center">
 
-| Component | Status | URL |
-|:----------|:-------|:----|
-| **Backend API** | 🟢 Live | [Hugging Face Spaces](https://huggingface.co/spaces/purvansh01/astramed-backend/tree/main) |
-| **Frontend App** | 🟢 Live | [Vercel App](https://clinical-risk-predictor-nine.vercel.app/) |
+| Component | Status | Stack | Link |
+|:----------|:-------|:------|:-----|
+| **Prediction Engine** | 🟢 **Online** | FastAPI + XGBoost/CatBoost | [**API Docs**](https://huggingface.co/spaces/purvansh01/astramed-backend/docs) |
+| **ML Inference Node** | 🟢 **Online** | Python 3.10 | [**Model Spaces**](https://huggingface.co/spaces/purvansh01/astramed-backend) |
+| **Frontend App** | 🟢 **Online** | React + TypeScript | [**Live App**](https://clinical-risk-predictor-nine.vercel.app/) |
 
-> **Interactive Demo**: Visit the **Backend API** link to explore the Swagger documentation and test the model inference directly.
+> **Interactive Demo**: Visit the **API Docs** link to explore the Swagger documentation and test the model inference directly.
 
 </div>
 
