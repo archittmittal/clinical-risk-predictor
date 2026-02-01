@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import PatientInputs from './components/PatientInputs';
-import ClinicianDashboard from './components/ClinicianDashboard';
+import CentralHub from './components/dashboard/CentralHub';
+import AnalysisRail from './components/dashboard/AnalysisRail';
 import AppShell from './components/layout/AppShell';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import AuditLog from './components/AuditLog'; // Restore
-import StoryPage from './components/StoryPage'; // New
-import GlobalBackground from './components/GlobalBackground'; // New WebGL Background
+import AuditLog from './components/AuditLog';
+import StoryPage from './components/StoryPage';
+import GlobalBackground from './components/GlobalBackground';
 import { type PredictionResponse, type PredictionInput } from './api/client';
-import { Stethoscope, Brain } from 'lucide-react';
+import { Stethoscope, Brain, Activity, LineChart } from 'lucide-react';
 import DigitalTwinModel from './components/DigitalTwinModel';
 
 interface User {
@@ -22,12 +23,11 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [view, setView] = useState<'dashboard' | 'logs'>('dashboard');
-  const [showIntro, setShowIntro] = useState(false); // New state for storytelling
+  const [showIntro, setShowIntro] = useState(false);
   const [predictionData, setPredictionData] = useState<PredictionResponse | null>(null);
   const [patientData, setPatientData] = useState<PredictionInput | null>(null);
-  const [slideIndex, setSlideIndex] = useState(0); // For global background sync
+  const [slideIndex, setSlideIndex] = useState(0);
 
-  // Check if user is already logged in (from localStorage)
   useEffect(() => {
     const storedUser = localStorage.getItem('clinicalRiskUser');
     if (storedUser) {
@@ -35,10 +35,6 @@ function App() {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         setIsAuthenticated(true);
-        // Do not show intro on re-load, only on fresh login if desired.
-        // Or if we want to show it once per session, we could session storage it.
-        // For now, let's assume we do NOT show it on refresh to be less annoying,
-        // unless the user explicitly logs in again.
       } catch (e) {
         localStorage.removeItem('clinicalRiskUser');
       }
@@ -48,14 +44,14 @@ function App() {
   const handleLoginSuccess = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
-    setShowIntro(true); // Show intro after login
+    setShowIntro(true);
     localStorage.setItem('clinicalRiskUser', JSON.stringify(userData));
   };
 
   const handleSignupSuccess = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
-    setShowIntro(true); // Show intro after signup
+    setShowIntro(true);
     localStorage.setItem('clinicalRiskUser', JSON.stringify(userData));
   };
 
@@ -72,7 +68,6 @@ function App() {
     setPatientData(input);
   };
 
-  // Show login page if not authenticated
   if (!isAuthenticated) {
     if (authMode === 'login') {
       return (
@@ -93,13 +88,11 @@ function App() {
 
   return (
     <div className="relative w-full min-h-screen">
-      {/* Persistent Global 3D Background */}
       <GlobalBackground
         mode={showIntro ? 'story' : 'dashboard'}
         slideIndex={slideIndex}
       />
 
-      {/* Content Layer */}
       <div className="relative z-10">
         {showIntro ? (
           <StoryPage
@@ -118,34 +111,35 @@ function App() {
                 <AuditLog />
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] mx-auto pb-12">
+              // Main Dashboard Grid - Symmetrical 3-Column Layout (3 | 6 | 3)
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start max-w-[1800px] mx-auto pb-12 px-4 md:px-6">
 
-                {/* Left Column: Input Form */}
+                {/* Left Pillar: Input Form (Span 3) */}
                 <div className="lg:col-span-3 space-y-6">
-                  <div className="glass-panel p-6 rounded-3xl border-l-4 border-l-clinical-teal flex items-start gap-4">
+                  <div className="glass-panel p-6 rounded-3xl border-l-4 border-l-clinical-teal flex items-start gap-4 shadow-glass dark:shadow-glass-dark">
                     <div className="p-3 rounded-2xl bg-clinical-teal/10 text-clinical-teal">
                       <Stethoscope size={24} strokeWidth={2} />
                     </div>
                     <div>
-                      <h2 className="text-lg font-display font-bold text-slate-900 dark:text-white">New Assessment</h2>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Enter patient vitals below to generate a multi-model risk profile.</p>
+                      <h2 className="text-lg font-display font-bold text-slate-900 dark:text-white">Assessment</h2>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Enter vitals to generate risk profile.</p>
                     </div>
                   </div>
                   <PatientInputs onPredictionSuccess={handlePredictionSuccess} />
                 </div>
 
-                {/* Right Column: Dashboard */}
-                <div className="lg:col-span-8 xl:col-span-8">
-                  {predictionData ? (
-                    <ClinicianDashboard
+                {/* Central Spire: Hero Hub or Placeholder (Span 6) */}
+                <div className="lg:col-span-6 h-full min-h-[800px]">
+                  {predictionData && patientData ? (
+                    <CentralHub
                       prediction={predictionData}
-                      patientInput={patientData!}
-                      onReset={() => { setPredictionData(null); setPatientData(null); }}
+                      patientInput={patientData}
                     />
                   ) : (
-                    <div className="glass-panel min-h-[600px] h-full rounded-3xl p-0 flex flex-col items-center justify-center text-center relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10">
+                    // HERO Placeholder
+                    <div className="glass-panel h-full rounded-3xl p-0 flex flex-col items-center justify-center text-center relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border border-white/20 shadow-glass-lg">
                       {/* 3D Digital Twin Model */}
-                      <div className="absolute inset-0 z-0">
+                      <div className="absolute inset-0 z-0 opacity-80">
                         <DigitalTwinModel />
                       </div>
 
@@ -161,19 +155,41 @@ function App() {
                         </h3>
 
                         <p className="text-slate-500 dark:text-slate-400 max-w-md text-base leading-relaxed mb-8 px-4">
-                          Our SOTA ensemble model combined with BioMistral-7B provides explainable risk predictions and digital twin simulations.
+                          SOTA ensemble model • BioMistral-7B • Digital Twin
                         </p>
 
                         <div className="flex gap-4">
-                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm">
+                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm shadow-sm">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                             System Online
                           </div>
-                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm">
+                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm shadow-sm">
                             <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                            v2.0 Loaded
+                            v3.0 Core
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Right Pillar: Analysis Rail or Placeholder (Span 3) */}
+                <div className="lg:col-span-3 h-full">
+                  {predictionData && patientData ? (
+                    <AnalysisRail prediction={predictionData} patientInput={patientData} />
+                  ) : (
+                    // Skeleton / Info Placeholder
+                    <div className="space-y-6 h-full flex flex-col">
+                      {/* Skeleton 1 */}
+                      <div className="glass-panel p-6 rounded-3xl h-[200px] border border-white/10 flex flex-col items-center justify-center text-slate-400 opacity-60">
+                        <Activity className="mb-2 text-slate-300" />
+                        <span className="text-xs font-bold uppercase tracking-widest">Waiting for Data</span>
+                      </div>
+
+                      {/* Skeleton 2 */}
+                      <div className="glass-panel p-6 rounded-3xl flex-1 border border-white/10 flex flex-col items-center justify-center text-slate-400 opacity-60">
+                        <LineChart className="mb-2 text-slate-300" />
+                        <span className="text-xs font-bold uppercase tracking-widest">Awaiting Analysis</span>
                       </div>
                     </div>
                   )}
