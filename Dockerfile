@@ -16,7 +16,11 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the backend code into /app/backend to maintain package structure
+# Copy the backend code into /app/backend to maintain package structure
 COPY backend ./backend
+
+# Copy data directory (Required for Cohort Engine)
+COPY data ./data
 
 # Create a writable directory for the model (Hugging Face Spaces requirement)
 RUN mkdir -p /app/backend/models/weights && chmod -R 777 /app/backend/models/weights
