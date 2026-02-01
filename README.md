@@ -11,7 +11,7 @@
 
 **AstraMed** represents a paradigm shift in preventive medicine, combining **State-of-the-Art (SOTA) Machine Learning** with a **"Neo-Medical" Glassmorphism UI** to deliver interpreting, accurate, and actionable health insights.
 
-[**Explore Live App**](https://clinical-risk-predictor-nine.vercel.app/) | [**Test API Engine**](https://huggingface.co/spaces/purvansh01/astramed-bd/docs) | [**View Code**](https://github.com/purvanshjoshi/clinical-risk-predictor)
+[**Explore Live App**](https://clinical-risk-predictor-nine.vercel.app/) | [**Test API Engine**](https://huggingface.co/spaces/purvansh01/astramed-backend) | [**View Code**](https://github.com/purvanshjoshi/clinical-risk-predictor)
 
 </div>
 
