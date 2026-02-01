@@ -53,7 +53,7 @@ interface GlobalBackgroundProps {
 export default function GlobalBackground({ mode, slideIndex }: GlobalBackgroundProps) {
     // Colors for Story Slides
     const storyColors = ["#f43f5e", "#06b6d4", "#10b981"]; // Rose, Cyan, Emerald
-    const dashboardColor = "#0f172a"; // Slate-900 like
+
 
     const [currentColor, setCurrentColor] = useState(storyColors[0]);
 
