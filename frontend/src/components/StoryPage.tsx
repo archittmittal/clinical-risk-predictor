@@ -4,21 +4,24 @@ import { Howl } from 'howler';
 import { Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, VolumeX } from 'lucide-react';
 
 // --- Assets ---
-// Using a soothing ambient track ("Deep Urban Chill" or similar vibe)
 const ambientSound = new Howl({
-    src: ['https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3'], // Soothing ambient track
+    src: ['https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3'],
     loop: true,
-    volume: 0.5,
-    html5: true
+    volume: 1.0, // Max volume for debugging
+    html5: true, // Force HTML5 Audio
+    onplay: () => console.log('Audio playing'),
+    onload: () => console.log('Audio loaded'),
+    onloaderror: (id, err) => console.error('Audio load error', err),
+    onplayerror: (id, err) => console.error('Audio play error', err)
 });
 
 const clickSound = new Howl({
-    src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-technology-select-3124.mp3'], // Placeholder
+    src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-technology-select-3124.mp3'],
     volume: 0.2
 });
 
 const transitionSound = new Howl({
-    src: ['https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-interface-click-901.mp3'], // Placeholder
+    src: ['https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-interface-click-901.mp3'],
     volume: 0.15
 });
 
@@ -33,6 +36,7 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
     const [currentSlide, setCurrentSlide] = useState(0);
     const [muted, setMuted] = useState(false);
     const [interacted, setInteracted] = useState(false);
+    const [audioStatus, setAudioStatus] = useState<'waiting' | 'loading' | 'playing' | 'error'>('waiting');
 
     useEffect(() => {
         // Sync minimal state
@@ -40,8 +44,14 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
     }, [currentSlide, onSlideChange]);
 
     useEffect(() => {
+        ambientSound.on('load', () => setAudioStatus('loading'));
+        ambientSound.on('play', () => setAudioStatus('playing'));
+        ambientSound.on('loaderror', () => setAudioStatus('error'));
+        ambientSound.on('playerror', () => setAudioStatus('error'));
+
         return () => {
             ambientSound.stop();
+            ambientSound.off();
         };
     }, []);
 
@@ -49,18 +59,20 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         if (!interacted) {
             setInteracted(true);
             if (!muted) {
+                setAudioStatus('loading');
                 ambientSound.play();
-                ambientSound.fade(0, 0.5, 3000); // 3s Fade in
+                ambientSound.fade(0, 1.0, 3000);
             }
         }
     };
 
     const toggleMute = () => {
         if (muted) {
-            ambientSound.fade(0, 0.5, 1000);
+            ambientSound.fade(0, 1.0, 1000);
             setMuted(false);
+            if (interacted && !ambientSound.playing()) ambientSound.play();
         } else {
-            ambientSound.fade(0.5, 0, 500);
+            ambientSound.fade(1.0, 0, 500);
             setMuted(true);
         }
     };
@@ -101,7 +113,7 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         if (currentSlide < slides.length - 1) {
             setCurrentSlide(prev => prev + 1);
         } else {
-            ambientSound.fade(0.5, 0, 1000);
+            ambientSound.fade(1.0, 0, 1000);
             setTimeout(onComplete, 500);
         }
     };
@@ -111,7 +123,10 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
             className="fixed inset-0 z-50 overflow-hidden font-display cursor-default selection:bg-clinical-teal/30"
             onClick={handleInteraction}
         >
-            {/* Background is now handled globally */}
+            {/* Debug Status */}
+            <div className="fixed bottom-4 right-20 z-[70] px-3 py-1 rounded-full bg-black/50 text-[10px] text-white/50 font-mono pointer-events-none backdrop-blur-md border border-white/5">
+                ♫ {audioStatus} | {muted ? 'muted' : 'vol:100%'}
+            </div>
 
             {/* Sound Control */}
             <button
