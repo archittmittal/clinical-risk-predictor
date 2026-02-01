@@ -10,7 +10,7 @@ interface AnalysisRailProps {
     patientInput: PredictionInput;
 }
 
-const AnalysisRail: React.FC<AnalysisRailProps> = ({ prediction, patientInput }) => {
+const AnalysisRail: React.FC<AnalysisRailProps> = ({ prediction: _prediction, patientInput }) => {
     const [report, setReport] = useState<string | null>(null);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [loadingReport, setLoadingReport] = useState(false);
