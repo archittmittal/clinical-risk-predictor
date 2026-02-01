@@ -69,7 +69,7 @@ export default function StoryPage({ onComplete }: StoryPageProps) {
                     initial={{ y: -50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
-                    className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50"
+                    className="relative mt-8 mb-4 flex flex-col items-center gap-2 z-50"
                 >
                     <div className="flex items-center gap-3 px-6 py-2.5 bg-white/5 border border-white/10 rounded-full backdrop-blur-md shadow-2xl ring-1 ring-white/20 hover:bg-white/10 transition-colors cursor-default">
                         <div className="p-1.5 bg-clinical-teal/20 rounded-full">
@@ -80,7 +80,7 @@ export default function StoryPage({ onComplete }: StoryPageProps) {
                 </motion.div>
 
                 {/* Main Content Area */}
-                <div className="mt-20 min-h-[400px] flex flex-col items-center justify-center">
+                <div className="mt-8 min-h-[400px] flex flex-col items-center justify-center">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentSlide}
