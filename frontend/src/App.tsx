@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import AuditLog from './components/AuditLog'; // Restore
 import StoryPage from './components/StoryPage'; // New
+import GlobalBackground from './components/GlobalBackground'; // New WebGL Background
 import { type PredictionResponse, type PredictionInput } from './api/client';
 import { Stethoscope, Brain } from 'lucide-react';
 import DigitalTwinModel from './components/DigitalTwinModel';
@@ -24,6 +25,7 @@ function App() {
   const [showIntro, setShowIntro] = useState(false); // New state for storytelling
   const [predictionData, setPredictionData] = useState<PredictionResponse | null>(null);
   const [patientData, setPatientData] = useState<PredictionInput | null>(null);
+  const [slideIndex, setSlideIndex] = useState(0); // For global background sync
 
   // Check if user is already logged in (from localStorage)
   useEffect(() => {
@@ -89,88 +91,100 @@ function App() {
     }
   }
 
-  // Show intro story if authenticated but intro not completed
-  if (showIntro) {
-    return <StoryPage onComplete={() => setShowIntro(false)} />;
-  }
-
-  // Show main app if authenticated and intro completed
   return (
-    <AppShell
-      onLogout={handleLogout}
-      user={user}
-      currentView={view}
-      onNavigate={(v) => setView(v === 'logs' ? 'logs' : 'dashboard')}
-    >
-      {view === 'logs' ? (
-        <div className="max-w-5xl mx-auto">
-          <AuditLog />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] mx-auto pb-12">
+    <div className="relative w-full min-h-screen">
+      {/* Persistent Global 3D Background */}
+      <GlobalBackground
+        mode={showIntro ? 'story' : 'dashboard'}
+        slideIndex={slideIndex}
+      />
 
-          {/* Left Column: Input Form */}
-          <div className="lg:col-span-3 space-y-6">
-            <div className="glass-panel p-6 rounded-3xl border-l-4 border-l-clinical-teal flex items-start gap-4">
-              <div className="p-3 rounded-2xl bg-clinical-teal/10 text-clinical-teal">
-                <Stethoscope size={24} strokeWidth={2} />
+      {/* Content Layer */}
+      <div className="relative z-10">
+        {showIntro ? (
+          <StoryPage
+            onComplete={() => setShowIntro(false)}
+            onSlideChange={setSlideIndex}
+          />
+        ) : (
+          <AppShell
+            onLogout={handleLogout}
+            user={user}
+            currentView={view}
+            onNavigate={(v) => setView(v === 'logs' ? 'logs' : 'dashboard')}
+          >
+            {view === 'logs' ? (
+              <div className="max-w-5xl mx-auto">
+                <AuditLog />
               </div>
-              <div>
-                <h2 className="text-lg font-display font-bold text-slate-900 dark:text-white">New Assessment</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Enter patient vitals below to generate a multi-model risk profile.</p>
-              </div>
-            </div>
-            <PatientInputs onPredictionSuccess={handlePredictionSuccess} />
-          </div>
-
-          {/* Right Column: Dashboard */}
-          <div className="lg:col-span-8 xl:col-span-8">
-            {predictionData ? (
-              <ClinicianDashboard
-                prediction={predictionData}
-                patientInput={patientData!}
-                onReset={() => { setPredictionData(null); setPatientData(null); }}
-              />
             ) : (
-              <div className="glass-panel min-h-[600px] h-full rounded-3xl p-0 flex flex-col items-center justify-center text-center relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10">
-                {/* 3D Digital Twin Model */}
-                <div className="absolute inset-0 z-0">
-                  <DigitalTwinModel />
-                </div>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] mx-auto pb-12">
 
-                <div className="relative z-10 flex flex-col items-center pointer-events-none mt-40">
-                  <div className="relative mb-6">
-                    <div className="relative bg-white/10 dark:bg-slate-900/30 p-6 rounded-2xl backdrop-blur-md shadow-glass ring-1 ring-white/20">
-                      <Brain className="text-clinical-teal dark:text-teal-400 w-12 h-12" strokeWidth={1.5} />
+                {/* Left Column: Input Form */}
+                <div className="lg:col-span-3 space-y-6">
+                  <div className="glass-panel p-6 rounded-3xl border-l-4 border-l-clinical-teal flex items-start gap-4">
+                    <div className="p-3 rounded-2xl bg-clinical-teal/10 text-clinical-teal">
+                      <Stethoscope size={24} strokeWidth={2} />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-display font-bold text-slate-900 dark:text-white">New Assessment</h2>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Enter patient vitals below to generate a multi-model risk profile.</p>
                     </div>
                   </div>
-
-                  <h3 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
-                    Ready for <span className="text-transparent bg-clip-text bg-gradient-to-r from-clinical-teal to-cyan-500">Analysis</span>
-                  </h3>
-
-                  <p className="text-slate-500 dark:text-slate-400 max-w-md text-base leading-relaxed mb-8 px-4">
-                    Our SOTA ensemble model combined with BioMistral-7B provides explainable risk predictions and digital twin simulations.
-                  </p>
-
-                  <div className="flex gap-4">
-                    <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                      System Online
-                    </div>
-                    <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                      v2.0 Loaded
-                    </div>
-                  </div>
+                  <PatientInputs onPredictionSuccess={handlePredictionSuccess} />
                 </div>
+
+                {/* Right Column: Dashboard */}
+                <div className="lg:col-span-8 xl:col-span-8">
+                  {predictionData ? (
+                    <ClinicianDashboard
+                      prediction={predictionData}
+                      patientInput={patientData!}
+                      onReset={() => { setPredictionData(null); setPatientData(null); }}
+                    />
+                  ) : (
+                    <div className="glass-panel min-h-[600px] h-full rounded-3xl p-0 flex flex-col items-center justify-center text-center relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10">
+                      {/* 3D Digital Twin Model */}
+                      <div className="absolute inset-0 z-0">
+                        <DigitalTwinModel />
+                      </div>
+
+                      <div className="relative z-10 flex flex-col items-center pointer-events-none mt-40">
+                        <div className="relative mb-6">
+                          <div className="relative bg-white/10 dark:bg-slate-900/30 p-6 rounded-2xl backdrop-blur-md shadow-glass ring-1 ring-white/20">
+                            <Brain className="text-clinical-teal dark:text-teal-400 w-12 h-12" strokeWidth={1.5} />
+                          </div>
+                        </div>
+
+                        <h3 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
+                          Ready for <span className="text-transparent bg-clip-text bg-gradient-to-r from-clinical-teal to-cyan-500">Analysis</span>
+                        </h3>
+
+                        <p className="text-slate-500 dark:text-slate-400 max-w-md text-base leading-relaxed mb-8 px-4">
+                          Our SOTA ensemble model combined with BioMistral-7B provides explainable risk predictions and digital twin simulations.
+                        </p>
+
+                        <div className="flex gap-4">
+                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                            System Online
+                          </div>
+                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            v2.0 Loaded
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
               </div>
             )}
-          </div>
-
-        </div>
-      )}
-    </AppShell>
+          </AppShell>
+        )}
+      </div>
+    </div>
   );
 }
 

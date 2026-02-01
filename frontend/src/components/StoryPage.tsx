@@ -1,9 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial, Stars } from '@react-three/drei';
-// @ts-ignore
-import * as random from 'maath/random/dist/maath-random.esm';
 import { Howl } from 'howler';
 import { Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, VolumeX } from 'lucide-react';
 
@@ -26,59 +22,22 @@ const transitionSound = new Howl({
     volume: 0.15
 });
 
-
-// --- 3D Components ---
-
-function ParticleCloud({ color }: { color: string }) {
-    const ref = useRef<any>(null);
-    // @ts-ignore
-    const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }));
-
-    useFrame((_state, delta) => {
-        if (ref.current) {
-            ref.current.rotation.x -= delta / 10;
-            ref.current.rotation.y -= delta / 15;
-        }
-    });
-
-    return (
-        <group rotation={[0, 0, Math.PI / 4]}>
-            <Points ref={ref} positions={sphere} stride={3} frustumCulled={false}>
-                <PointMaterial
-                    transparent
-                    color={color}
-                    size={0.005}
-                    sizeAttenuation={true}
-                    depthWrite={false}
-                />
-            </Points>
-        </group>
-    );
-}
-
-function Scene({ currentSlide }: { currentSlide: number }) {
-    const colors = ["#f43f5e", "#06b6d4", "#10b981"]; // Rose, Cyan, Emerald
-
-    return (
-        <>
-            <ambientLight intensity={0.5} />
-            <ParticleCloud color={colors[currentSlide]} />
-            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        </>
-    );
-}
-
-
 // --- Main UI Component ---
 
 interface StoryPageProps {
     onComplete: () => void;
+    onSlideChange?: (index: number) => void;
 }
 
-export default function StoryPage({ onComplete }: StoryPageProps) {
+export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps) {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [muted, setMuted] = useState(false);
     const [interacted, setInteracted] = useState(false);
+
+    useEffect(() => {
+        // Sync minimal state
+        onSlideChange?.(currentSlide);
+    }, [currentSlide, onSlideChange]);
 
     useEffect(() => {
         return () => {
@@ -147,19 +106,10 @@ export default function StoryPage({ onComplete }: StoryPageProps) {
 
     return (
         <div
-            className="fixed inset-0 z-50 bg-slate-950 overflow-hidden font-display cursor-default selection:bg-clinical-teal/30"
+            className="fixed inset-0 z-50 overflow-hidden font-display cursor-default selection:bg-clinical-teal/30"
             onClick={handleInteraction}
         >
-
-            {/* 3D Scene Layer */}
-            <div className="absolute inset-0 z-0 opacity-80">
-                <Canvas camera={{ position: [0, 0, 3], fov: 75 }}>
-                    <Scene currentSlide={currentSlide} />
-                </Canvas>
-            </div>
-
-            {/* Noise Overlay for texture */}
-            <div className="absolute inset-0 z-[1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+            {/* Background is now handled globally */}
 
             {/* Sound Control */}
             <button
