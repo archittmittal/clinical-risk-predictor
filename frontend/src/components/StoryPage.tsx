@@ -1,6 +1,75 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Activity, Brain, ShieldCheck, ChevronRight, Stethoscope } from 'lucide-react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Points, PointMaterial, Float, Stars } from '@react-three/drei';
+import * as random from 'maath/random/dist/maath-random.esm';
+import { Howl } from 'howler';
+import { ArrowRight, Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, VolumeX } from 'lucide-react';
+import * as THREE from 'three';
+
+// --- Assets ---
+// Using placeholder sounds for now - these are generic URLs that should work or fail silently
+const ambientSound = new Howl({
+    src: ['https://assets.mixkit.co/sfx/preview/mixkit-futuristic-hum-2122.mp3'], // Placeholder
+    loop: true,
+    volume: 0.1,
+    html5: true
+});
+
+const clickSound = new Howl({
+    src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-technology-select-3124.mp3'], // Placeholder
+    volume: 0.2
+});
+
+const transitionSound = new Howl({
+    src: ['https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-interface-click-901.mp3'], // Placeholder
+    volume: 0.15
+});
+
+
+// --- 3D Components ---
+
+function ParticleCloud({ color }: { color: string }) {
+    const ref = useRef<any>();
+    // @ts-ignore
+    const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }));
+
+    useFrame((state, delta) => {
+        if (ref.current) {
+            ref.current.rotation.x -= delta / 10;
+            ref.current.rotation.y -= delta / 15;
+        }
+    });
+
+    return (
+        <group rotation={[0, 0, Math.PI / 4]}>
+            <Points ref={ref} positions={sphere} stride={3} frustumCulled={false}>
+                <PointMaterial
+                    transparent
+                    color={color}
+                    size={0.005}
+                    sizeAttenuation={true}
+                    depthWrite={false}
+                />
+            </Points>
+        </group>
+    );
+}
+
+function Scene({ currentSlide }: { currentSlide: number }) {
+    const colors = ["#f43f5e", "#06b6d4", "#10b981"]; // Rose, Cyan, Emerald
+
+    return (
+        <>
+            <ambientLight intensity={0.5} />
+            <ParticleCloud color={colors[currentSlide]} />
+            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+        </>
+    );
+}
+
+
+// --- Main UI Component ---
 
 interface StoryPageProps {
     onComplete: () => void;
@@ -8,6 +77,32 @@ interface StoryPageProps {
 
 export default function StoryPage({ onComplete }: StoryPageProps) {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [muted, setMuted] = useState(false);
+    const [interacted, setInteracted] = useState(false);
+
+    useEffect(() => {
+        return () => {
+            ambientSound.stop();
+        };
+    }, []);
+
+    const handleInteraction = () => {
+        if (!interacted && !muted) {
+            setInteracted(true);
+            ambientSound.play();
+            ambientSound.fade(0, 0.1, 2000);
+        }
+    };
+
+    const toggleMute = () => {
+        if (muted) {
+            ambientSound.fade(0, 0.1, 1000);
+            setMuted(false);
+        } else {
+            ambientSound.fade(0.1, 0, 500);
+            setMuted(true);
+        }
+    };
 
     const slides = [
         {
@@ -16,8 +111,8 @@ export default function StoryPage({ onComplete }: StoryPageProps) {
             subtitle: "Healthcare data is complex, fragmented, and overwhelming.",
             description: "Clinicians spend 40% of their time synthesizing data instead of treating patients. Critical insights often get lost in the noise of disconnected systems.",
             icon: <Activity className="w-24 h-24 text-rose-500" />,
-            color: "from-rose-500/20 to-orange-500/20",
-            accent: "text-rose-400"
+            color: "text-rose-400",
+            accentData: "rose"
         },
         {
             id: 1,
@@ -25,8 +120,8 @@ export default function StoryPage({ onComplete }: StoryPageProps) {
             subtitle: "A digital twin for every patient, powered by SOTA ensembles.",
             description: "We process thousands of biomarkers in real-time using BioMistral-7B and advanced risk engines to predict outcomes before they happen.",
             icon: <Brain className="w-24 h-24 text-cyan-500" />,
-            color: "from-cyan-500/20 to-blue-500/20",
-            accent: "text-cyan-400"
+            color: "text-cyan-400",
+            accentData: "cyan"
         },
         {
             id: 2,
@@ -34,37 +129,50 @@ export default function StoryPage({ onComplete }: StoryPageProps) {
             subtitle: "Precision medicine at your fingertips.",
             description: "Welcome to your new dashboard. Real-time risk stratification, counterfactual analysis, and explainable AI—all in one place.",
             icon: <ShieldCheck className="w-24 h-24 text-emerald-500" />,
-            color: "from-emerald-500/20 to-teal-500/20",
-            accent: "text-emerald-400"
+            color: "text-emerald-400",
+            accentData: "emerald"
         }
     ];
 
     const handleNext = () => {
+        if (!muted) transitionSound.play();
+
         if (currentSlide < slides.length - 1) {
             setCurrentSlide(prev => prev + 1);
         } else {
-            onComplete();
+            ambientSound.fade(0.1, 0, 1000);
+            setTimeout(onComplete, 500);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 overflow-hidden font-display">
-            {/* Dynamic Background */}
-            <motion.div
-                key={currentSlide}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
-                className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].color} blur-3xl opacity-30`}
-            />
+        <div
+            className="fixed inset-0 z-50 bg-slate-950 overflow-hidden font-display cursor-default selection:bg-clinical-teal/30"
+            onClick={handleInteraction}
+        >
 
-            {/* Grid Pattern Overlay */}
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
-            <div className="absolute inset-0 bg-grid-white/[0.05] [mask-image:radial-gradient(ellipse_at_center,black,transparent)]"></div>
+            {/* 3D Scene Layer */}
+            <div className="absolute inset-0 z-0 opacity-80">
+                <Canvas camera={{ position: [0, 0, 3], fov: 75 }}>
+                    <Scene currentSlide={currentSlide} />
+                </Canvas>
+            </div>
 
-            <div className="relative z-10 max-w-5xl w-full px-6 flex flex-col items-center text-center">
+            {/* Noise Overlay for texture */}
+            <div className="absolute inset-0 z-[1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
 
-                {/* Header Logo */}
+            {/* Sound Control */}
+            <button
+                onClick={(e) => { e.stopPropagation(); toggleMute(); }}
+                className="absolute top-8 right-8 z-[60] p-3 rounded-full bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 transition-all backdrop-blur-md"
+            >
+                {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </button>
+
+            {/* Main Content Layer */}
+            <div className="relative z-10 w-full h-full flex flex-col items-center">
+
+                {/* Header Logo - Fixed Absolute */}
                 <motion.div
                     initial={{ y: -50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -79,78 +187,82 @@ export default function StoryPage({ onComplete }: StoryPageProps) {
                     </div>
                 </motion.div>
 
-                {/* Main Content Area */}
-                <div className="mt-8 pt-32 min-h-[400px] flex flex-col items-center justify-center">
+                {/* Content Container with Padding for Logo Clearance */}
+                <div className="flex-1 w-full flex flex-col items-center justify-center pt-32 px-6">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentSlide}
-                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -20, scale: 1.05 }}
-                            transition={{ duration: 0.5, ease: "easeOut" }}
-                            className="flex flex-col items-center max-w-3xl"
+                            initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
+                            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                            exit={{ opacity: 0, y: -40, filter: "blur(10px)" }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="flex flex-col items-center text-center max-w-4xl"
                         >
-                            <div className="mb-8 p-8 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl ring-1 ring-white/20">
-                                {slides[currentSlide].icon}
+                            {/* Icon Glass Container */}
+                            <div className="mb-10 relative group">
+                                <div className={`absolute inset-0 bg-${slides[currentSlide].accentData}-500/20 blur-2xl rounded-full group-hover:bg-${slides[currentSlide].accentData}-500/30 transition-all duration-700`}></div>
+                                <div className="relative p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-2xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/20">
+                                    {slides[currentSlide].icon}
+                                </div>
                             </div>
 
-                            <h1 className="text-5xl md:text-6xl font-bold text-white tracking-tight mb-6 drop-shadow-lg">
-                                <span className="bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+                            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-8 drop-shadow-2xl">
+                                <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50">
                                     {slides[currentSlide].title}
                                 </span>
                             </h1>
 
-                            <h2 className={`text-2xl md:text-3xl font-medium ${slides[currentSlide].accent} mb-6`}>
+                            <h2 className={`text-2xl md:text-3xl font-light ${slides[currentSlide].color} mb-8 tracking-wide`}>
                                 {slides[currentSlide].subtitle}
                             </h2>
 
-                            <p className="text-lg text-slate-400 max-w-2xl leading-relaxed">
+                            <p className="text-xl text-slate-400 max-w-2xl leading-relaxed font-light">
                                 {slides[currentSlide].description}
                             </p>
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
-                {/* Navigation & Progress */}
-                <div className="mt-24 w-full flex flex-col items-center gap-8">
-
-                    {/* Progress Indicators */}
-                    <div className="flex gap-3">
+                {/* Footer Navigation */}
+                <div className="w-full pb-16 flex flex-col items-center gap-10 z-50">
+                    {/* Progress Bars */}
+                    <div className="flex gap-4">
                         {slides.map((_, index) => (
-                            <motion.div
-                                key={index}
-                                className={`h-1.5 rounded-full transition-all duration-500 ${index === currentSlide ? "w-12 bg-white" : "w-3 bg-white/20"
-                                    }`}
-                                layoutId="progress"
-                            />
+                            <div key={index} className="h-1 w-24 bg-white/10 rounded-full overflow-hidden">
+                                <motion.div
+                                    className="h-full bg-white"
+                                    initial={{ width: "0%" }}
+                                    animate={{ width: index === currentSlide ? "100%" : index < currentSlide ? "100%" : "0%" }}
+                                    transition={{ duration: index === currentSlide ? 5 : 0.5 }} // Auto-progress simulation logic if we wanted it
+                                />
+                            </div>
                         ))}
                     </div>
 
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleNext}
-                        className="group relative px-8 py-4 bg-white text-slate-950 rounded-2xl font-semibold text-lg hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all duration-300 flex items-center gap-3 overflow-hidden"
-                    >
-                        <span className="relative z-10">
-                            {currentSlide === slides.length - 1 ? "Enter Dashboard" : "Continue Journey"}
-                        </span>
-                        {currentSlide === slides.length - 1 ? (
+                    <div className="flex items-center gap-8">
+                        <button
+                            onClick={() => { if (!muted) clickSound.play(); onComplete(); }}
+                            className="text-sm text-slate-500 hover:text-white transition-colors tracking-widest uppercase hover:underline underline-offset-8 decoration-white/30"
+                        >
+                            Skip Intro
+                        </button>
+
+                        <motion.button
+                            whileHover={{ scale: 1.05, boxShadow: "0 0 30px -5px rgba(255, 255, 255, 0.3)" }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handleNext}
+                            className="group relative px-10 py-5 bg-white text-slate-950 rounded-full font-bold text-lg transition-all duration-300 flex items-center gap-4 overflow-hidden"
+                        >
+                            <span className="relative z-10">
+                                {currentSlide === slides.length - 1 ? "Enter Dashboard" : "Continue"}
+                            </span>
                             <ChevronRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-                        ) : (
-                            <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-                        )}
 
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                    </motion.button>
-
-                    <button
-                        onClick={onComplete}
-                        className="text-sm text-slate-500 hover:text-white transition-colors"
-                    >
-                        Skip Intro
-                    </button>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-200 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                        </motion.button>
+                    </div>
                 </div>
+
             </div>
         </div>
     );
