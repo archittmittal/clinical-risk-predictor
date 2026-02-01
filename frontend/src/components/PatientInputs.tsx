@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { predictRisk, type PredictionInput, type PredictionResponse } from '../api/client';
-import { Loader2, Info, Activity, User, Cigarette, HeartPulse, Scale, ActivitySquare, Droplets, Ruler } from 'lucide-react';
+import { Loader2, Info, Activity, User, HeartPulse, Scale, ActivitySquare, Droplets } from 'lucide-react';
 import SectionCard from "./ui/SectionCard";
 
 interface PatientInputsProps {
@@ -10,7 +10,7 @@ interface PatientInputsProps {
 }
 
 const PatientInputs: React.FC<PatientInputsProps> = ({ onPredictionSuccess, user }) => {
-    const { register, handleSubmit, control, formState: { errors }, setValue } = useForm<PredictionInput>({
+    const { register, handleSubmit, control } = useForm<PredictionInput>({
         defaultValues: {
             age: 45,
             gender: 'Female',
@@ -60,7 +60,6 @@ const PatientInputs: React.FC<PatientInputsProps> = ({ onPredictionSuccess, user
 
     // Shared Styles
     const labelClass = "block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1.5";
-    const sliderContainerClass = "relative pt-1";
     const sliderClass = "w-full h-2 bg-slate-200 dark:bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-clinical-teal hover:accent-teal-500 transition-all";
     const numberInputClass = "w-20 pl-3 pr-2 py-1.5 bg-white border border-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 text-right";
 
@@ -164,7 +163,7 @@ const PatientInputs: React.FC<PatientInputsProps> = ({ onPredictionSuccess, user
                         {/* BMI */}
                         <div>
                             <div className="flex justify-between items-center mb-3">
-                                <label className={labelClass}><Scale size={14} /> BMI</label>
+                                <label className={labelClass}><Scale size={14} /> BMI ({bmi})</label>
                                 <div className="flex items-center gap-2">
                                     <input type="number" step="0.1" {...register("bmi")} className={numberInputClass} />
                                     <span className="text-[10px] font-bold text-slate-400">KG/M²</span>
@@ -181,7 +180,7 @@ const PatientInputs: React.FC<PatientInputsProps> = ({ onPredictionSuccess, user
                         {/* HbA1c */}
                         <div>
                             <div className="flex justify-between items-center mb-3">
-                                <label className={labelClass}><Droplets size={14} /> HbA1c</label>
+                                <label className={labelClass}><Droplets size={14} /> HbA1c ({hba1c}%)</label>
                                 <div className="flex items-center gap-2">
                                     <input type="number" step="0.1" {...register("HbA1c_level")} className={numberInputClass} />
                                     <span className="text-[10px] font-bold text-slate-400">%</span>
@@ -194,7 +193,7 @@ const PatientInputs: React.FC<PatientInputsProps> = ({ onPredictionSuccess, user
                         {/* Glucose */}
                         <div>
                             <div className="flex justify-between items-center mb-3">
-                                <label className={labelClass}><Droplets size={14} /> Glucose</label>
+                                <label className={labelClass}><Droplets size={14} /> Glucose ({glucose})</label>
                                 <div className="flex items-center gap-2">
                                     <input type="number" step="1" {...register("blood_glucose_level")} className={numberInputClass} />
                                     <span className="text-[10px] font-bold text-slate-400">MG/DL</span>
