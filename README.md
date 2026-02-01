@@ -354,7 +354,7 @@ This empowers shared decision-making and personalized goal setting.
 | 🤖 **AI Engine** | BioMistral-7B | Medical language model |
 | 💾 **Database** | JSON Store (MVP) → PostgreSQL | Patient history & records |
 | 🐳 **Container** | Docker + Docker Compose | Consistent deployment |
-| 🚀 **Deployment** | Render (Backend) + Vercel (Frontend) | Cloud hosting |
+| 🚀 **Deployment** | Huggingface (Backend) + Vercel (Frontend) | Cloud hosting |
 
 ---
 
