@@ -1,11 +1,11 @@
 ---
-title: AstraMed Clinical AI
+title: Astramed Backend
 emoji: 🏥
-colorFrom: teal
+colorFrom: green
 colorTo: blue
 sdk: docker
+pinned: false
 app_port: 7860
-pinned: true
 ---
 
 <div align="center">
@@ -22,17 +22,248 @@ pinned: true
 
 [**Explore Live App**](https://clinical-risk-predictor-nine.vercel.app/) | [**Test API Engine**](https://huggingface.co/spaces/purvansh01/astramed-bd/docs) | [**View Code**](https://github.com/purvanshjoshi/clinical-risk-predictor)
 
+</div>---
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/FastAPI-0.104+-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI"/>
+  <img src="https://img.shields.io/badge/React-18+-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"/>
+</p>
+
 </div>
 
 ---
 
-## 🌍 Live Ecosystem
+## 📑 Table of Contents
 
-| Service Component | Status | Technology | Deployment URL |
-|:------------------|:-------|:-----------|:---------------|
-| **Frontend Platform** | 🟢 **Online** | React + Vite + Tailwind | [**Launch Dashboard**](https://clinical-risk-predictor-nine.vercel.app/) |
-| **Prediction Engine** | 🟢 **Online** | FastAPI + XGBoost/CatBoost | [**API Docs**](https://huggingface.co/spaces/purvansh01/astramed-bd/docs) |
-| **ML Inference Node** | 🟢 **Online** | Python 3.10 | [**Model Spaces**](https://huggingface.co/spaces/purvansh01/astramed-bd) |
+- [🏆 Praxis 2.0 Overview](#-praxis-20-overview)
+- [🌍 Live Deployment](#-live-deployment)
+- [🎯 Problem Statement](#-problem-statement)
+- [💡 Solution Architecture](#-solution-architecture)
+- [🚀 Key Features](#-key-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [👥 Team Structure](#-team-structure)
+- [📅 Development Timeline](#-development-timeline)
+- [⚡ Quick Start](#-quick-start)
+- [📦 Project Structure](#-project-structure)
+- [📊 Expected Deliverables](#-expected-deliverables)
+- [🎓 Evaluation Criteria](#-evaluation-criteria)
+- [📚 Documentation](#-documentation)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+
+---
+
+## 🏆 Praxis 2.0 Overview
+
+<table>
+<tr>
+<td width="33%" align="center">
+<img src="https://img.icons8.com/fluency/96/000000/artificial-intelligence.png" width="80"/>
+<h3>🤖 Machine Learning</h3>
+<p><i>Advanced risk prediction and patient stratification</i></p>
+</td>
+<td width="33%" align="center">
+<img src="https://img.icons8.com/fluency/96/000000/brain.png" width="80"/>
+<h3>✨ Generative AI</h3>
+<p><i>Intelligent reasoning and natural language insights</i></p>
+</td>
+<td width="33%" align="center">
+<img src="https://img.icons8.com/fluency/96/000000/health-graph.png" width="80"/>
+<h3>👥 Human-Centric</h3>
+<p><i>Clinical relevance and usability first</i></p>
+</td>
+</tr>
+</table>
+
+**Praxis 2.0** is a GenAI + Machine Learning innovation showcase where we design and build functional prototypes addressing real-world challenges. This project demonstrates:
+
+> 🎯 **Machine Learning** for risk prediction and stratification  
+> 🧠 **Generative AI** for reasoning, explanation, and patient-friendly insights  
+> 💚 **Human-Centric Design** prioritizing clinical relevance and usability
+
+---
+
+## 🌍 Live Deployment
+
+<div align="center">
+
+| Component | Status | URL |
+|:----------|:-------|:----|
+| **Backend API** | 🟢 Live | [Hugging Face Spaces](https://huggingface.co/spaces/purvansh01/astramed-bd) |
+| **Frontend App** | 🟢 Live | [Vercel App](https://clinical-risk-predictor-nine.vercel.app/) |
+
+> **Interactive Demo**: Visit the **Backend API** link to explore the Swagger documentation and test the model inference directly.
+
+</div>
+
+---
+
+## 🎯 Problem Statement
+
+### 🏥 Track 1: Clinical Decision Support
+
+<div align="center">
+
+```mermaid
+graph LR
+    A[😷 Silent Disease<br/>Progression] --> B[⏰ Late Detection]
+    B --> C[💰 Costly<br/>Interventions]
+    C --> D[📉 Poor<br/>Outcomes]
+    
+    style A fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    style B fill:#ffa94d,stroke:#e8590c,color:#fff
+    style C fill:#ffd43b,stroke:#fab005,color:#000
+    style D fill:#ff6b6b,stroke:#c92a2a,color:#fff
+```
+
+</div>
+
+#### 🔍 Context
+
+Chronic diseases such as **diabetes** often develop silently. By the time symptoms appear, interventions become costly and outcomes worsen. Clinicians operate under:
+
+- ⏱️ **Time Pressure** — Limited consultation windows
+- 📊 **Data Gaps** — Incomplete historical records  
+- ❓ **Uncertainty** — Complex probabilistic assessments
+
+Meanwhile, **patients struggle** to understand probabilistic health risks and preventive actions.
+
+#### ⚠️ The Challenge
+
+> **Design a clinical decision support workflow that:**
+> - ✅ Surfaces early risk signals from routine patient data
+> - ✅ Supports informed, timely interventions
+> - ✅ Doesn't overwhelm doctors or mislead patients
+
+#### 💡 What Our Solution Enables
+
+<table>
+<tr>
+<td width="50%">
+<h4>🔬 For Clinicians</h4>
+<ul>
+<li>📈 High-density risk scores with confidence intervals</li>
+<li>🎯 Key contributing factors ranked by importance</li>
+<li>📊 SHAP-based explanations and visualizations</li>
+<li>💊 Evidence-based action recommendations</li>
+<li>📉 Longitudinal trend analysis</li>
+</ul>
+</td>
+<td width="50%">
+<h4>👤 For Patients</h4>
+<ul>
+<li>🚦 Simple risk gauges (traffic light system)</li>
+<li>📝 Plain-language summaries</li>
+<li>🥗 Personalized lifestyle guidance</li>
+<li>📱 Progress tracking over time</li>
+<li>✨ AI-generated action plans</li>
+</ul>
+</td>
+</tr>
+</table>
+
+---
+
+## 💡 Solution Architecture
+
+### 🏗️ System Design
+
+<div align="center">
+
+<img width="351" height="1706" alt="image" src="https://github.com/user-attachments/assets/a259d1a6-ff46-4c01-ae3d-1d41dd624778" />
+
+
+
+
+
+</div>
+
+### 🔄 Data Flow Pipeline
+
+<div align="center">
+<img width="1349" height="641" alt="image" src="https://github.com/user-attachments/assets/76e3bb05-d06e-4031-9925-ea9ffa086ed5" />
+
+
+</div>
+
+---
+
+## 🚀 Key Features
+
+### 🎯 Core Capabilities
+
+<table>
+<tr>
+<td width="50%">
+
+#### 1️⃣ Risk Scoring & Stratification
+
+- 📊 **Multi-Level Classification**: Low / Medium / High risk tiers
+- 📈 **Confidence Intervals**: Uncertainty quantification
+- 📉 **Longitudinal Tracking**: Risk velocity over time
+- 🎯 **Percentile Rankings**: Population-based context
+
+</td>
+<td width="50%">
+
+#### 2️⃣ Explainability & Transparency
+
+- 🔍 **SHAP Values**: Feature importance rankings
+- 📊 **Force Plots**: Visual explanation of predictions
+- 🎨 **Interactive Charts**: Drill-down analysis
+- 📋 **Audit Trails**: Complete decision logs
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+#### 3️⃣ Counterfactual Reasoning
+
+- 🎛️ **What-If Scenarios**: "Reduce BMI by 5% → Risk ↓15%"
+- 🔄 **Interactive Simulation**: Real-time slider controls
+- 🎯 **Modifiable Factors**: Focus on actionable changes
+- 📈 **Impact Visualization**: Before/after comparisons
+
+</td>
+<td width="50%">
+
+#### 4️⃣ AI-Powered Reports
+
+- 📝 **Clinical Summaries**: Technical detail for providers
+- 👤 **Patient Explanations**: Plain-language versions
+- 🤖 **BioMistral-7B**: Medical-grade language model
+- 📄 **PDF Generation**: Exportable reports
+
+</td>
+</tr>
+</tr>
+<tr>
+<td width="50%">
+
+#### 5️⃣ Population Analytics
+
+- 👥 **Digital Twin Matching**: Find similar patient outcomes
+- 📊 **Cohort Analysis**: Demographic comparisons
+- 🎯 **Percentile Context**: "Your risk is higher than 82% of peers"
+- 📈 **Trend Detection**: Population-level patterns
+
+</td>
+<td width="50%">
+
+#### 6️⃣ Pro Max UI/UX Experience
+
+- 💎 **Glassmorphism 2.0**: Premium, accessible aesthetic
+- 🔲 **Bento Grid Layout**: Information-dense, organized dashboard
+- 🎛️ **Interactive Sliders**: Real-time "What-If" adjustments
+- 📊 **Radial Risk Gauges**: Dynamic, animated risk visualization
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -72,24 +303,27 @@ This empowers shared decision-making and personalized goal setting.
 
 ---
 
-## 💎 "Neo-Medical" User Experience
+## 🛠️ Tech Stack
 
-We have overhauled the traditional "drab" clinical software look with a **Pro Max UI/UX** standard:
+<div align="center">
 
-### 🎨 Design System: Glassmorphism 2.0
--   **Aesthetic**: Frosted glass panels, subtle noise textures, and deep blurs create a hierarchy of information.
--   **Color Palette**: A curated mix of **Clinical Teal** (Confidence), **Slate** (Structure), and **Ethereal Blue** (Calm).
--   **Typography**: **Figtree** for modern readability & **Inter** for data density.
+### Backend Stack
 
-### 🧩 Key Interface Features
-1.  **The Bento Grid Dashboard**: A dense, grid-based layout that surfaces Critical Vitals, Risk Profiles, and Longitudinal Trends in a single view.
-2.  **Interactive Bio-Sliders**: Replaced manual data entry with fluid range sliders that provide real-time visual feedback (e.g., "Obese" tag appears dynamically as BMI slider moves).
-3.  **Radial Risk Gauge**: A custom-animated Recharts visualization that provides immediate, color-coded risk context.
-4.  **Audit Logs**: Role-Based Access Control (RBAC) ensures only Admins can view detailed clinician activity logs.
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3+-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-Latest-337AB7?style=for-the-badge)
+![Pandas](https://img.shields.io/badge/Pandas-2.0+-150458?style=for-the-badge&logo=pandas&logoColor=white)
 
----
+### Frontend Stack
 
-## 🛠️ Technical Stack
+![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-3.0+-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Recharts](https://img.shields.io/badge/Recharts-2.10+-22c55e?style=for-the-badge)
+![Lucide](https://img.shields.io/badge/Lucide_Icons-Latest-F7931E?style=for-the-badge)
+
+### ML & AI Stack
 
 <div align="center">
 
@@ -115,69 +349,704 @@ We have overhauled the traditional "drab" clinical software look with a **Pro Ma
 
 </div>
 
----
+</div>
 
-## ⚡ Accelerated Setup
+### 📊 Technology Matrix
 
-### Option A: Docker (Recommended)
-Launch the entire stack with a single command.
-```bash
-docker-compose up --build
-```
-*Access Frontend at `http://localhost:3000` & Backend at `http://localhost:8001`*
-
-### Option B: Manual Installation
-
-#### 1. Backend Engine
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python api.py
-```
-
-#### 2. Frontend Application
-```bash
-cd frontend
-npm install
-npm run dev
-```
+| Layer | Technology | Purpose |
+|:------|:-----------|:--------|
+| 🎨 **Frontend** | React + TypeScript | Interactive UI components |
+| 🎨 **Styling** | Tailwind CSS | Responsive design system |
+| ⚡ **Backend** | FastAPI | High-performance REST API |
+| 🧠 **ML Engine** | XGBoost + LightGBM + CatBoost | SOTA ensemble prediction |
+| 🔍 **Explainability** | SHAP | Feature importance analysis |
+| 🤖 **AI Engine** | BioMistral-7B | Medical language model |
+| 💾 **Database** | JSON Store (MVP) → PostgreSQL | Patient history & records |
+| 🐳 **Container** | Docker + Docker Compose | Consistent deployment |
+| 🚀 **Deployment** | Render (Backend) + Vercel (Frontend) | Cloud hosting |
 
 ---
 
-## 📂 Project Structure
+## 👥 Team Structure
 
-```
-astramed/
-├── 🧠 backend/                 # AI & Logic Core
-│   ├── models/                 # ML Engines (Risk, History, Cohort)
-│   ├── routes/                 # API Endpoints
-│   ├── data/                   # Clinical Datasets
-│   ├── api.py                  # FastAPI Entrypoint
-│   └── requirements.txt        # Python Dependencies
-│
-├── 🎨 frontend/                # Interactive UI
-│   ├── src/
-│   │   ├── components/         # React Components (Bento, Glassmorphism)
-│   │   ├── api/                # TypeScript Clients
-│   │   └── index.css           # Tailwind + Animation Styles
-│   ├── Dockerfile              # Vercel/Container Config
-│   └── package.json            # Node Dependencies
-│
-├── ⚙️ DevOps
-│   ├── docker-compose.yml      # Orchestration
-│   └── .github/workflows/      # CI/CD Pipelines
-```
-
----
-
-## 👥 Contributors & Credits
-
-Built with ❤️ for **Praxis 2.0**.
-Special thanks to the open-source community behind Scikit-Learn, SHAP, and React.
-
----
 <div align="center">
-  <p>© 2026 AstraMed AI. All Rights Reserved.</p>
+
+### 🎯 4-Member Multidisciplinary Team
+
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔬 ML Engineer
+**Model Development & Explainability**
+
+#### 🎯 Responsibilities
+- 📊 Dataset cleaning and exploratory data analysis
+- 🤖 Risk model development (XGBoost, LightGBM, CatBoost)
+- 📈 Uncertainty quantification and calibration
+- 🔍 SHAP-based feature importance
+- 🎲 Counterfactual reasoning implementation
+- ⚖️ Bias detection and fairness analysis
+
+#### 📦 Deliverables
+- `ml-research/train.py` — Model training pipeline
+- `backend/models/risk_model.py` — Inference engine
+- `backend/models/explainability.py` — SHAP integration
+- Model performance reports and visualizations
+
+</td>
+<td width="50%">
+
+### ⚙️ Backend Engineer
+**FastAPI Services & Infrastructure**
+
+#### 🎯 Responsibilities
+- 🏗️ API architecture and endpoint design
+- 📥 Patient data ingestion and validation
+- 🔐 Authentication and authorization
+- 📊 Risk computation API endpoints
+- 👥 Cohort analysis and digital twin matching
+- 🚀 Deployment setup (Docker, Render)
+
+#### 📦 Deliverables
+- `backend/app.py` — Main FastAPI application
+- `backend/routes/` — All API endpoints
+- `backend/schemas/` — Pydantic models
+- API documentation (OpenAPI/Swagger)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 👨‍⚕️ Frontend Engineer (Clinician)
+**Professional Dashboard Interface**
+
+#### 🎯 Responsibilities
+- 🎨 Clinician dashboard UI/UX design
+- 🔍 Patient search and filtering system
+- 📊 Risk score visualization (gauges, charts)
+- 🎯 Key driver display components
+- 📋 Explanation panels and tooltips
+- 💊 Action recommendation interface
+
+#### 📦 Deliverables
+- `frontend/src/components/Clinician/` — Dashboard components
+- Risk visualization library
+- Clinical workflow integration
+- Responsive design implementation
+
+</td>
+<td width="50%">
+
+### 👤 Frontend Engineer (Patient)
+**Patient Portal & Documentation**
+
+#### 🎯 Responsibilities
+- 🎨 Patient portal UI/UX design
+- 🚦 Simple risk gauge (traffic light)
+- 📝 Plain-language explanation generation
+- 🥗 Lifestyle recommendation interface
+- 📈 Progress tracking visualizations
+- 📚 Project documentation and pitch deck
+
+#### 📦 Deliverables
+- `frontend/src/components/Patient/` — Patient components
+- User-friendly health guidance interface
+- `docs/` — Comprehensive documentation
+- Presentation slides and demo materials
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📅 Development Timeline
+
+<div align="center">
+
+### 🎯 Sprint to Submission — February 10 Deadline
+
+</div>
+
+
+### 📋 Detailed Sprint Plan
+
+#### 🗓️ Week 1: Design & Core Model (by Jan 24)
+
+<details>
+<summary>🎯 Click to expand tasks</summary>
+
+- [ ] **Project Setup**
+  - [ ] Initialize GitHub repository with proper structure
+  - [ ] Set up development environments (Python, Node.js)
+  - [ ] Configure CI/CD pipelines (GitHub Actions)
+  - [ ] Create project board and issue templates
+
+- [ ] **ML Foundation**
+  - [ ] Load and explore diabetes dataset
+  - [ ] Perform statistical analysis and visualization
+  - [ ] Handle missing values and outliers
+  - [ ] Feature engineering (interactions, scaling)
+  - [ ] Initial model prototyping
+
+- [ ] **Backend Architecture**
+  - [ ] Design API schema (Pydantic models)
+  - [ ] Set up FastAPI boilerplate
+  - [ ] Implement health check endpoints
+  - [ ] Configure CORS and middleware
+
+- [ ] **Frontend Design**
+  - [ ] Create wireframes for clinician dashboard
+  - [ ] Design patient portal mockups
+  - [ ] Set up React + TypeScript + Vite
+  - [ ] Implement component structure
+
+</details>
+
+#### 🗓️ Week 2: Full Stack Development (by Jan 31)
+
+<details>
+<summary>🎯 Click to expand tasks</summary>
+
+- [ ] **ML Pipeline**
+  - [ ] Train ensemble model (XGBoost + LightGBM + CatBoost)
+  - [ ] Implement SHAP explainability
+  - [ ] Calculate feature importance
+  - [ ] Serialize models (.joblib files)
+  - [ ] Validate model performance (AUC-ROC, calibration)
+
+- [ ] **Backend APIs**
+  - [ ] `/predict` — Risk assessment endpoint
+  - [ ] `/simulate` — What-if analysis endpoint
+  - [ ] `/report` — AI report generation endpoint
+  - [ ] `/history` — Patient timeline endpoint
+  - [ ] `/cohort` — Population analysis endpoint
+
+- [ ] **Frontend Integration**
+  - [ ] Clinician dashboard with risk visualization
+  - [ ] Patient portal with simple gauges
+  - [ ] Connect to backend APIs
+  - [ ] Implement state management
+  - [ ] Add loading states and error handling
+
+- [ ] **End-to-End Testing**
+  - [ ] Integration tests for API endpoints
+  - [ ] UI component tests
+  - [ ] Full workflow validation
+
+</details>
+
+#### 🗓️ Week 3: Polish & Submission (by Feb 9)
+
+<details>
+<summary>🎯 Click to expand tasks</summary>
+
+- [ ] **Advanced Features**
+  - [ ] Implement counterfactual engine
+  - [ ] Add cohort comparison functionality
+  - [ ] Integrate BioMistral-7B for AI reports
+  - [ ] Build what-if simulation interface
+
+- [ ] **Documentation**
+  - [ ] Write comprehensive README
+  - [ ] Create MODEL_CARD.md
+  - [ ] Document ETHICS_AND_LIMITATIONS.md
+  - [ ] Complete ARCHITECTURE.md
+  - [ ] Generate API documentation
+
+- [ ] **Presentation**
+  - [ ] Design pitch deck (15 slides)
+  - [ ] Record demo video (5-7 minutes)
+  - [ ] Prepare talking points
+  - [ ] Rehearse presentation
+
+- [ ] **Final Polish**
+  - [ ] UI/UX refinement and accessibility
+  - [ ] Performance optimization
+  - [ ] Bug fixes and edge case handling
+  - [ ] Docker deployment testing
+  - [ ] Submit repository and materials
+
+</details>
+
+---
+
+## ⚡ Quick Start
+
+### 📋 Prerequisites
+
+```bash
+# Required software
+✅ Python 3.10+
+✅ Node.js 18+
+✅ Git 2.30+
+✅ Docker 24.0+ (optional)
+```
+
+### 🐍 Backend Setup
+
+```bash
+# Navigate to backend directory
+cd backend
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the server
+uvicorn backend.api:app --reload --port 8001
+
+# 🎉 Server running at http://localhost:8001
+# 📚 API docs at http://localhost:8001/docs
+```
+
+### ⚛️ Frontend Setup
+
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# 🎉 App running at http://localhost:5173
+```
+
+### 🧠 ML Model Training
+
+```bash
+# Navigate to ML research directory
+cd ml-research
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Train the model
+python train_pro.py
+
+# 📦 Models saved to backend/models/
+# 📊 Performance metrics in outputs/
+```
+
+### 🐳 Docker Deployment (Recommended)
+
+```bash
+# Build and run all services
+docker-compose up --build
+
+# Services available at:
+# 🎨 Frontend: http://localhost:3000
+# ⚡ Backend: http://localhost:8001
+# 📚 API Docs: http://localhost:8001/docs
+```
+
+---
+
+## 📦 Project Structure
+
+```
+clinical-risk-predictor/
+│
+├── 📁 backend/                     # FastAPI Server
+│   ├── 📄 app.py                   # Main application entry point
+│   ├── 📄 requirements.txt         # Python dependencies
+│   │
+│   ├── 📁 models/                  # ML Risk Models
+│   │   ├── 📄 risk_model.py        # Ensemble prediction engine
+│   │   ├── 📄 counterfactuals.py   # What-if analysis logic
+│   │   └── 📄 explainability.py    # SHAP feature importance
+│   │
+│   ├── 📁 routes/                  # API Endpoints
+│   │   ├── 📄 patient.py           # Patient data management
+│   │   ├── 📄 risk.py              # Risk computation APIs
+│   │   └── 📄 cohort.py            # Population analytics
+│   │
+│   ├── 📁 schemas/                 # Data Validation
+│   │   ├── 📄 patient.py           # Patient data models
+│   │   └── 📄 prediction.py        # Prediction schemas
+│   │
+│   └── 📁 utils/                   # Helper Functions
+│       ├── 📄 preprocessing.py     # Feature engineering
+│       └── 📄 validation.py        # Data validation
+│
+├── 📁 frontend/                    # React Application
+│   ├── 📄 package.json             # Node dependencies
+│   ├── 📄 vite.config.ts           # Vite configuration
+│   │
+│   ├── 📁 public/                  # Static Assets
+│   │   └── 🖼️ logo.svg
+│   │
+│   └── 📁 src/
+│       ├── 📄 App.tsx              # Root component
+│       ├── 📄 main.tsx             # Entry point
+│       │
+│       ├── 📁 components/          # React Components
+│       │   │
+│       │   ├── 📁 Clinician/       # Doctor Dashboard
+│       │   │   ├── 📄 RiskDashboard.tsx
+│       │   │   ├── 📄 PatientList.tsx
+│       │   │   ├── 📄 RiskDetail.tsx
+│       │   │   └── 📄 CohortAnalysis.tsx
+│       │   │
+│       │   ├── 📁 Patient/         # Patient Portal
+│       │   │   ├── 📄 RiskGauge.tsx
+│       │   │   ├── 📄 SimpleReport.tsx
+│       │   │   ├── 📄 ActionPlan.tsx
+│       │   │   └── 📄 Progress.tsx
+│       │   │
+│       │   └── 📁 Common/          # Shared Components
+│       │       ├── 📄 Header.tsx
+│       │       ├── 📄 Footer.tsx
+│       │       └── 📄 LoadingSpinner.tsx
+│       │
+│       ├── 📁 pages/               # Page Components
+│       │   ├── 📄 ClinicianView.tsx
+│       │   └── 📄 PatientView.tsx
+│       │
+│       ├── 📁 hooks/               # Custom Hooks
+│       │   └── 📄 useRiskPrediction.ts
+│       │
+│       └── 📁 utils/               # Utilities
+│           └── 📄 api.ts           # API client
+│
+├── 📁 ml-research/                 # ML Development
+│   ├── 📄 train.py                 # Model training script
+│   ├── 📄 evaluate.py              # Model evaluation
+│   ├── 📄 requirements.txt         # ML dependencies
+│   │
+│   ├── 📁 notebooks/               # Jupyter Notebooks
+│   │   ├── 📓 01_EDA.ipynb         # Exploratory analysis
+│   │   ├── 📓 02_Modeling.ipynb    # Model development
+│   │   └── 📓 03_Evaluation.ipynb  # Performance analysis
+│   │
+│   └── 📁 experiments/             # Experiment Logs
+│       └── 📄 model_metrics.json
+│
+├── 📁 data/                        # Datasets
+│   ├── 📊 diabetes_dataset.csv     # Training data (provided)
+│   ├── 📊 synthetic_patients.csv   # Test data
+│   └── 📊 population_stats.json    # Cohort statistics
+│
+├── 📁 docs/                        # Documentation
+│   ├── 📄 ARCHITECTURE.md          # System design details
+│   ├── 📄 API_SPEC.md              # API documentation
+│   ├── 📄 MODEL_CARD.md            # Model specifications
+│   ├── 📄 ETHICS_AND_LIMITATIONS.md # Safety considerations
+│   ├── 📄 TEAM_ROLES.md            # Team structure
+│   ├── 📄 TIMELINE.md              # Sprint planning
+│   └── 📄 DEPLOYMENT.md            # Deployment guide
+│
+├── 📁 .github/                     # GitHub Configuration
+│   └── 📁 workflows/
+│       ├── 📄 backend-tests.yml    # Backend CI/CD
+│       └── 📄 frontend-tests.yml   # Frontend CI/CD
+│
+├── 📄 docker-compose.yml           # Multi-container setup
+├── 📄 .gitignore                   # Git ignore rules
+├── 📄 README.md                    # This file
+├── 📄 CONTRIBUTING.md              # Contribution guidelines
+└── 📄 LICENSE                      # MIT License
+
+```
+
+---
+
+## 📊 Expected Deliverables
+
+<div align="center">
+
+### 🎯 Final Showcase Outputs
+
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+#### 📦 1. Public GitHub Repository
+
+**Complete Source Code with Documentation**
+
+- ✅ Well-organized file structure
+- ✅ Comprehensive README.md
+- ✅ Code comments and docstrings
+- ✅ Architectural diagrams
+- ✅ API documentation (OpenAPI)
+- ✅ Version control history
+
+**Repository Link**: [GitHub.com/YourTeam/clinical-risk-predictor](https://github.com)
+
+</td>
+<td width="50%">
+
+#### 💻 2. Working Prototype
+
+**Full-Stack Application Demo**
+
+- ✅ FastAPI backend (deployed)
+- ✅ React frontend (deployed)
+- ✅ Clinician dashboard interface
+- ✅ Patient portal interface
+- ✅ Real-time risk predictions
+- ✅ Interactive visualizations
+
+**Live Demo**: [app.clinical-risk.demo](https://demo.com)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+#### 🎥 3. Demo Video
+
+**5-7 Minute Walkthrough**
+
+- ✅ Problem statement explanation
+- ✅ Solution architecture overview
+- ✅ Live feature demonstration
+- ✅ Key technical insights
+- ✅ Impact and use cases
+- ✅ Future roadmap
+
+**Video Link**: [YouTube/Praxis-Demo](https://youtube.com)
+
+</td>
+<td width="50%">
+
+#### 📚 4. Comprehensive Documentation
+
+**Technical & Clinical Documentation**
+
+- ✅ **MODEL_CARD.md** — ML model details
+- ✅ **ETHICS_AND_LIMITATIONS.md** — Safety analysis
+- ✅ **ARCHITECTURE.md** — System design
+- ✅ **API_SPEC.md** — Endpoint reference
+- ✅ **DEPLOYMENT.md** — Setup guide
+- ✅ Presentation slides (PDF)
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🎓 Evaluation Criteria
+
+<div align="center">
+
+### 🏆 Aligning with Praxis 2.0 Values
+
+</div>
+
+Our project is designed to excel across all evaluation dimensions:
+
+<table>
+<tr>
+<td width="50%">
+
+### 💡 1. Thoughtful Problem Framing
+
+**Score Target: 🌟🌟🌟🌟🌟**
+
+✅ **Clear User Needs**
+- Clinicians need efficient risk assessment
+- Patients need understandable explanations
+- Both need actionable recommendations
+
+✅ **Real-World Impact**
+- Addresses silent disease progression
+- Reduces healthcare costs
+- Improves patient outcomes
+
+✅ **Dual Interface Design**
+- Technical dashboard for clinicians
+- Simple portal for patients
+
+</td>
+<td width="50%">
+
+### 🔬 2. Sound Technical Reasoning
+
+**Score Target: 🌟🌟🌟🌟🌟**
+
+✅ **Appropriate ML Metrics**
+- AUC-ROC for discrimination
+- Calibration plots for reliability
+- Brier score for accuracy
+
+✅ **Model Validation**
+- K-fold cross-validation
+- Test set holdout evaluation
+- Bias analysis across demographics
+
+✅ **Uncertainty Quantification**
+- Confidence intervals on predictions
+- Model disagreement metrics
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### ⚖️ 3. Responsible Use of AI
+
+**Score Target: 🌟🌟🌟🌟🌟**
+
+✅ **Bias Mitigation**
+- Fairness checks by age/gender/ethnicity
+- Equitable error rates analysis
+- Demographic parity assessment
+
+✅ **Safety Guardrails**
+- Clinical validation rules
+- Out-of-distribution detection
+- Human-in-the-loop design
+
+✅ **Transparency**
+- SHAP explanations for all predictions
+- Clear limitation disclaimers
+- Model card documentation
+
+</td>
+<td width="50%">
+
+### 📢 4. Clear Communication
+
+**Score Target: 🌟🌟🌟🌟🌟**
+
+✅ **Technical Clarity**
+- Well-documented code
+- Architectural diagrams
+- API specifications
+
+✅ **Patient-Friendly Language**
+- Avoid medical jargon
+- Visual metaphors (traffic lights)
+- Actionable recommendations
+
+✅ **GenAI Integration**
+- BioMistral for natural language summaries
+- Context-aware explanations
+- Personalized action plans
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📚 Documentation
+
+### 📖 Available Documentation
+
+<table>
+<tr>
+<td align="center" width="33%">
+
+#### 🏗️ Architecture
+
+[![Read Docs](https://img.shields.io/badge/Read-ARCHITECTURE.md-blue?style=for-the-badge)](./docs/ARCHITECTURE.md)
+
+System design, data flow, component interactions
+
+</td>
+<td align="center" width="33%">
+
+#### 🔌 API Reference
+
+[![Read Docs](https://img.shields.io/badge/Read-API__SPEC.md-green?style=for-the-badge)](./docs/API_SPEC.md)
+
+Endpoint documentation, request/response schemas
+
+</td>
+<td align="center" width="33%">
+
+#### 🤖 Model Card
+
+[![Read Docs](https://img.shields.io/badge/Read-MODEL__CARD.md-orange?style=for-the-badge)](./docs/MODEL_CARD.md)
+
+ML model details, performance metrics
+
+</td>
+</tr>
+<tr>
+<td align="center" width="33%">
+
+#### ⚖️ Ethics & Safety
+
+[![Read Docs](https://img.shields.io/badge/Read-ETHICS__AND__LIMITATIONS.md-red?style=for-the-badge)](./docs/ETHICS_AND_LIMITATIONS.md)
+
+Bias analysis, limitations, safety guidelines
+
+</td>
+<td align="center" width="33%">
+
+#### 👥 Team Structure
+
+[![Read Docs](https://img.shields.io/badge/Read-TEAM__ROLES.md-purple?style=for-the-badge)](./docs/TEAM_ROLES.md)
+
+Detailed role breakdown, deliverables
+
+</td>
+<td align="center" width="33%">
+
+#### 🚀 Deployment
+
+[![Read Docs](https://img.shields.io/badge/Read-DEPLOYMENT.md-yellow?style=for-the-badge)](./docs/DEPLOYMENT.md)
+
+Production setup, Docker guide
+
+</td>
+</tr>
+</table>
+
+---
+
+
+
+## 📄 License
+
+<div align="center">
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+**MIT License** — See [LICENSE](LICENSE) file for details
+
+---
+
+### 🌟 Acknowledgments
+
+Built with ❤️ for **Praxis Hackathon 2025**
+
+Special thanks to:
+- 🏆 Praxis 2.0 Organizing Committee
+- 🏥 Healthcare domain experts
+- 🤖 Open-source ML/AI community
+- 👥 Our amazing team members
+
+---
+
+<p align="center">
+  <strong>Ready to Transform Healthcare Through AI?</strong><br/>
+  <a href="https://github.com">⭐ Star this repository</a> •
+  <a href="https://github.com">🍴 Fork and contribute</a> •
+  <a href="https://github.com">📧 Get in touch</a>
+</p>
+
+---
+
+**Last Updated**: January 2025 | **Version**: 1.0.0 | **Status**: 🚧 In Active Development
+
 </div>
