@@ -28,7 +28,8 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
             const result = await generateReport(patientInput);
             setReport(result.report);
             if (result.pdf_url) {
-                setPdfUrl(`http://localhost:8001${result.pdf_url}`); // Ensure base URL is correct for dev
+                const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+                setPdfUrl(`${baseUrl}${result.pdf_url}`); // Ensure base URL is correct for dev
             }
         } catch (error) {
             console.error("Failed to generate report:", error);
