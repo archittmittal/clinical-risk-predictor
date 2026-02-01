@@ -1,7 +1,7 @@
 ---
 title: Astramed Backend
 emoji: 🏥
-colorFrom: teal
+colorFrom: green
 colorTo: blue
 sdk: docker
 pinned: false
