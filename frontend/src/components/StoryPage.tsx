@@ -30,7 +30,7 @@ const transitionSound = new Howl({
 // --- 3D Components ---
 
 function ParticleCloud({ color }: { color: string }) {
-    const ref = useRef<any>();
+    const ref = useRef<any>(null);
     // @ts-ignore
     const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }));
 
