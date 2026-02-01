@@ -4,7 +4,8 @@ import ClinicianDashboard from './components/ClinicianDashboard';
 import AppShell from './components/layout/AppShell';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import AuditLog from './components/AuditLog'; // New
+import AuditLog from './components/AuditLog'; // Restore
+import StoryPage from './components/StoryPage'; // New
 import { type PredictionResponse, type PredictionInput } from './api/client';
 import { Activity, Stethoscope, LineChart, Brain } from 'lucide-react';
 
@@ -18,7 +19,8 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [view, setView] = useState<'dashboard' | 'logs'>('dashboard'); // New view state
+  const [view, setView] = useState<'dashboard' | 'logs'>('dashboard');
+  const [showIntro, setShowIntro] = useState(false); // New state for storytelling
   const [predictionData, setPredictionData] = useState<PredictionResponse | null>(null);
   const [patientData, setPatientData] = useState<PredictionInput | null>(null);
 
@@ -30,6 +32,10 @@ function App() {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         setIsAuthenticated(true);
+        // Do not show intro on re-load, only on fresh login if desired.
+        // Or if we want to show it once per session, we could session storage it.
+        // For now, let's assume we do NOT show it on refresh to be less annoying,
+        // unless the user explicitly logs in again.
       } catch (e) {
         localStorage.removeItem('clinicalRiskUser');
       }
@@ -39,12 +45,14 @@ function App() {
   const handleLoginSuccess = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
+    setShowIntro(true); // Show intro after login
     localStorage.setItem('clinicalRiskUser', JSON.stringify(userData));
   };
 
   const handleSignupSuccess = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
+    setShowIntro(true); // Show intro after signup
     localStorage.setItem('clinicalRiskUser', JSON.stringify(userData));
   };
 
@@ -80,7 +88,12 @@ function App() {
     }
   }
 
-  // Show main app if authenticated
+  // Show intro story if authenticated but intro not completed
+  if (showIntro) {
+    return <StoryPage onComplete={() => setShowIntro(false)} />;
+  }
+
+  // Show main app if authenticated and intro completed
   return (
     <AppShell
       onLogout={handleLogout}
