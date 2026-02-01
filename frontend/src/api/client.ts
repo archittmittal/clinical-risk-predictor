@@ -18,6 +18,8 @@ export interface PredictionInput {
     bmi: number;
     HbA1c_level: number;
     blood_glucose_level: number;
+    clinician_id?: string;
+    clinician_name?: string;
 }
 
 export interface PredictionResponse {
@@ -123,6 +125,10 @@ export interface HistoryRecord {
     risk_assessment: {
         score: number;
         level: string;
+    };
+    clinician?: {
+        id: string;
+        name: string;
     };
 }
 

@@ -51,6 +51,22 @@ class RiskEngine:
         # Feature Engineering: BMI * Age (matches train_pro.py)
         if 'bmi' in df.columns and 'age' in df.columns:
             df['BMI_Age_Interaction'] = df['bmi'] * df['age']
+            
+        # Interaction: Glucose * HbA1c
+        if 'blood_glucose_level' in df.columns and 'HbA1c_level' in df.columns:
+            df['Glucose_HbA1c_Interaction'] = df['blood_glucose_level'] * df['HbA1c_level']
+            
+        # Age Categories (risk zones)
+        if 'age' in df.columns:
+            df['Age_Category'] = pd.cut(df['age'], 
+                                        bins=[0, 30, 45, 60, 100],
+                                        labels=['Young', 'Middle', 'Senior', 'Elderly'])
+        
+        # BMI Categories (WHO classification)
+        if 'bmi' in df.columns:
+            df['BMI_Category'] = pd.cut(df['bmi'],
+                                        bins=[0, 18.5, 25, 30, 100],
+                                        labels=['Underweight', 'Normal', 'Overweight', 'Obese'])
         
         return df
 
