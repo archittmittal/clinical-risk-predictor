@@ -21,7 +21,7 @@ app_port: 7860
 
 **A Praxis 2.0 Submission: GenAI + Machine Learning Innovation Showcase**
 
-*Healthcare | Preventive Medicine | Human-AI Collaboration*
+*Healthcare | Preventive Medicine | Human-AI Collaboration | **Pro Max UI/UX Experience***
 
 ---
 
@@ -40,6 +40,7 @@ app_port: 7860
 ## 📑 Table of Contents
 
 - [🏆 Praxis 2.0 Overview](#-praxis-20-overview)
+- [🌍 Live Deployment](#-live-deployment)
 - [🎯 Problem Statement](#-problem-statement)
 - [💡 Solution Architecture](#-solution-architecture)
 - [🚀 Key Features](#-key-features)
@@ -83,6 +84,21 @@ app_port: 7860
 > 🎯 **Machine Learning** for risk prediction and stratification  
 > 🧠 **Generative AI** for reasoning, explanation, and patient-friendly insights  
 > 💚 **Human-Centric Design** prioritizing clinical relevance and usability
+
+---
+
+## 🌍 Live Deployment
+
+<div align="center">
+
+| Component | Status | URL |
+|:----------|:-------|:----|
+| **Backend API** | 🟢 Live | [Hugging Face Spaces](https://huggingface.co/spaces/purvansh01/astramed-bd) |
+| **Frontend App** | 🟡 Ready | *Contact Team for Vercel Link* |
+
+> **Interactive Demo**: Visit the **Backend API** link to explore the Swagger documentation and test the model inference directly.
+
+</div>
 
 ---
 
@@ -225,6 +241,7 @@ Meanwhile, **patients struggle** to understand probabilistic health risks and pr
 
 </td>
 </tr>
+</tr>
 <tr>
 <td width="50%">
 
@@ -238,12 +255,12 @@ Meanwhile, **patients struggle** to understand probabilistic health risks and pr
 </td>
 <td width="50%">
 
-#### 6️⃣ Safety & Guardrails
+#### 6️⃣ Pro Max UI/UX Experience
 
-- ⚖️ **Bias Detection**: Demographic fairness checks
-- ❓ **Uncertainty Estimates**: Model confidence scores
-- ✅ **Clinical Validation**: Rule-based sanity checks
-- 📋 **Limitation Disclaimers**: Transparent boundaries
+- 💎 **Glassmorphism 2.0**: Premium, accessible aesthetic
+- 🔲 **Bento Grid Layout**: Information-dense, organized dashboard
+- 🎛️ **Interactive Sliders**: Real-time "What-If" adjustments
+- 📊 **Radial Risk Gauges**: Dynamic, animated risk visualization
 
 </td>
 </tr>
@@ -268,8 +285,8 @@ Meanwhile, **patients struggle** to understand probabilistic health risks and pr
 ![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-3.0+-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-5.0+-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Chart.js](https://img.shields.io/badge/Chart.js-4.0+-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
+![Recharts](https://img.shields.io/badge/Recharts-2.10+-22c55e?style=for-the-badge)
+![Lucide](https://img.shields.io/badge/Lucide_Icons-Latest-F7931E?style=for-the-badge)
 
 ### ML & AI Stack
 
