@@ -1,13 +1,15 @@
 import React, { type ReactNode, useState } from 'react';
-import { Activity, HelpCircle, User, Menu, LogOut, ChevronDown } from 'lucide-react';
+import { Activity, User, LogOut, ChevronDown, Sparkles, LayoutDashboard, FileClock } from 'lucide-react';
 
 interface AppShellProps {
     children: ReactNode;
     user?: { email: string; name: string; specialty?: string } | null;
     onLogout?: () => void;
+    currentView?: 'dashboard' | 'logs';
+    onNavigate?: (view: 'dashboard' | 'logs') => void;
 }
 
-const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout }) => {
+const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentView = 'dashboard', onNavigate }) => {
     const [showUserMenu, setShowUserMenu] = useState(false);
 
     const getInitials = (name: string) => {
@@ -19,104 +21,101 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout }) => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200 font-sans text-slate-900 dark:text-slate-100 selection:bg-blue-100 dark:selection:bg-blue-900">
+        <div className="min-h-screen font-sans">
             {/* Navbar */}
-            <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <header className="fixed top-4 left-4 right-4 z-50 rounded-2xl glass-panel px-6 h-18 flex items-center justify-between transition-all duration-300">
 
-                    {/* Brand */}
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white shadow-md shadow-blue-500/20">
-                            <Activity size={18} strokeWidth={2.5} />
-                        </div>
-                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-3">
-                            <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                                Clinical Risk Predictor
-                            </h1>
-                            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10">
-                                SOTA Ensemble v1
-                            </span>
-                        </div>
+                {/* Brand */}
+                <button onClick={() => onNavigate?.('dashboard')} className="flex items-center gap-3.5 group">
+                    <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-clinical-teal to-clinical-teal-dark text-white shadow-lg overflow-hidden group-hover:scale-105 transition-transform">
+                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                        <Activity size={20} strokeWidth={2.5} className="relative z-10" />
                     </div>
+                    <div className="flex flex-col items-start">
+                        <h1 className="text-xl font-display font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+                            Astra<span className="text-transparent bg-clip-text bg-gradient-to-r from-clinical-teal to-cyan-400">Med</span>
+                        </h1>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                            <Sparkles size={8} className="text-cyan-500" />
+                            Clinical Risk AI
+                        </span>
+                    </div>
+                </button>
 
-                    {/* Right Actions */}
-                    <div className="flex items-center gap-4">
-                        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
-                            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a>
-                            <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</a>
-                        </nav>
+                {/* Right Actions */}
+                <div className="flex items-center gap-5">
+                    <nav className="hidden md:flex items-center gap-1 text-sm font-medium text-slate-600 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-800/50 rounded-full px-1.5 py-1 border border-white/20 dark:border-white/5">
+                        <button
+                            onClick={() => onNavigate?.('dashboard')}
+                            className={`px-4 py-1.5 rounded-full transition-all flex items-center gap-2 ${currentView === 'dashboard' ? 'bg-white dark:bg-slate-700 text-clinical-teal dark:text-teal-400 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-slate-700/50'}`}
+                        >
+                            <LayoutDashboard size={14} />
+                            Dashboard
+                        </button>
+                        {user?.email === 'admin@hospital.org' && (
+                            <button
+                                onClick={() => onNavigate?.('logs')}
+                                className={`px-4 py-1.5 rounded-full transition-all flex items-center gap-2 ${currentView === 'logs' ? 'bg-white dark:bg-slate-700 text-clinical-teal dark:text-teal-400 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-slate-700/50'}`}
+                            >
+                                <FileClock size={14} />
+                                Audit Logs
+                            </button>
+                        )}
+                    </nav>
 
-                        <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden md:block" />
+                    <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden md:block" />
 
-                        <button className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors" aria-label="Help">
-                            <HelpCircle size={20} />
+                    {/* User Menu */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowUserMenu(!showUserMenu)}
+                            className="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all border border-transparent hover:border-white/40 dark:hover:border-slate-700"
+                        >
+                            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 dark:from-slate-200 dark:to-slate-400 flex items-center justify-center text-white dark:text-slate-900 text-xs font-bold shadow-md ring-2 ring-white dark:ring-slate-800">
+                                {user?.name ? getInitials(user.name) : <User size={14} />}
+                            </div>
+                            <div className="hidden sm:flex flex-col items-start">
+                                <span className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-tight">{user?.name || 'Guest User'}</span>
+                                <span className="text-[10px] text-slate-500 dark:text-slate-400">View Profile</span>
+                            </div>
+                            <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} />
                         </button>
 
-                        {/* User Menu */}
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowUserMenu(!showUserMenu)}
-                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                                aria-label="User Profile"
-                            >
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-medium shadow-md">
-                                    {user?.name ? getInitials(user.name) : <User size={16} />}
+                        {/* Dropdown */}
+                        {showUserMenu && user && (
+                            <div className="absolute right-0 mt-3 w-64 glass-panel rounded-2xl p-2 z-50 animate-fade-in origin-top-right shadow-2xl">
+                                <div className="px-4 py-3 bg-gradient-to-br from-slate-50/80 to-slate-100/50 dark:from-slate-800/80 dark:to-slate-800/50 rounded-xl mb-1 border border-white/50 dark:border-slate-700">
+                                    <p className="font-bold text-slate-900 dark:text-white text-sm font-display">{user.name}</p>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">{user.email}</p>
+                                    {user.specialty && (
+                                        <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold bg-clinical-teal/10 text-clinical-teal dark:text-teal-400 uppercase tracking-wide border border-clinical-teal/20">
+                                            {user.specialty}
+                                        </span>
+                                    )}
                                 </div>
-                                {user && (
-                                    <div className="hidden sm:flex flex-col items-start text-xs">
-                                        <span className="font-semibold text-slate-900 dark:text-white">{user.name}</span>
-                                        {user.specialty && <span className="text-slate-500 dark:text-slate-400">{user.specialty}</span>}
-                                    </div>
-                                )}
-                                <ChevronDown size={16} className="hidden sm:block text-slate-400 dark:text-slate-500" />
-                            </button>
-
-                            {/* Dropdown Menu */}
-                            {showUserMenu && user && (
-                                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-10">
-                                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                                        <p className="font-semibold text-slate-900 dark:text-white text-sm">{user.name}</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 break-words">{user.email}</p>
-                                        {user.specialty && (
-                                            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">{user.specialty}</p>
-                                        )}
-                                    </div>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                                    >
-                                        My Profile
-                                    </a>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                                    >
-                                        Settings
-                                    </a>
-                                    <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
+                                <div className="space-y-0.5">
                                     <button
                                         onClick={() => {
                                             setShowUserMenu(false);
                                             onLogout?.();
                                         }}
-                                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
+                                        className="w-full text-left px-4 py-2.5 text-sm text-clinical-coral hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors flex items-center gap-2.5 font-medium group"
                                     >
-                                        <LogOut size={16} />
+                                        <LogOut size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                                         Sign Out
                                     </button>
                                 </div>
-                            )}
-                        </div>
-
-                        <button className="md:hidden text-slate-500" aria-label="Menu">
-                            <Menu size={24} />
-                        </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </header>
 
+            {/* Main Content Spacer */}
+            <div className="h-28" />
+
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+            <main className="max-w-[1400px] mx-auto px-6 py-4 animate-fade-in pb-20">
                 {children}
             </main>
         </div>

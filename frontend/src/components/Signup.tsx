@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, Phone, Building2, Eye, EyeOff, Heart, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, Building2, Eye, EyeOff, ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface SignupProps {
   onSignupSuccess: (user: { email: string; name: string; specialty: string }) => void;
@@ -17,9 +17,9 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onSwitchToLogin }) => 
     confirmPassword: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -27,65 +27,51 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onSwitchToLogin }) => 
     setError('');
   };
 
-  const validateForm = () => {
-    if (!formData.firstName.trim()) {
-      setError('First name is required');
+  const validateStep1 = () => {
+    if (!formData.firstName.trim() || !formData.lastName.trim()) {
+      setError("Name is required");
       return false;
     }
-    if (!formData.lastName.trim()) {
-      setError('Last name is required');
-      return false;
-    }
-    if (!formData.email.trim()) {
-      setError('Email is required');
-      return false;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setError('Please enter a valid email address');
-      return false;
-    }
-    if (!formData.specialty) {
-      setError('Please select your specialty');
-      return false;
-    }
-    if (!formData.hospital.trim()) {
-      setError('Hospital/Institution name is required');
-      return false;
-    }
-    if (!formData.password) {
-      setError('Password is required');
-      return false;
-    }
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters');
-      return false;
-    }
-    if (!/(?=.*[A-Z])/.test(formData.password)) {
-      setError('Password must contain at least one uppercase letter');
-      return false;
-    }
-    if (!/(?=.*[0-9])/.test(formData.password)) {
-      setError('Password must contain at least one number');
-      return false;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError("Valid email is required");
       return false;
     }
     return true;
   };
 
+  const validateStep2 = () => {
+    if (!formData.specialty || !formData.hospital.trim()) {
+      setError("Clinical details are required");
+      return false;
+    }
+    return true;
+  }
+
+  const validateForm = () => {
+    if (!formData.password || formData.password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return false;
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    setError('');
+    if (step === 1 && validateStep1()) setStep(2);
+    if (step === 2 && validateStep2()) setStep(3);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-
     if (!validateForm()) return;
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      
+      await new Promise(resolve => setTimeout(resolve, 1000));
       onSignupSuccess({
         email: formData.email,
         name: `${formData.firstName} ${formData.lastName}`,
@@ -99,250 +85,214 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onSwitchToLogin }) => 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4 py-8">
-      {/* Animated Background Blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 dark:bg-blue-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 dark:bg-purple-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-2000"></div>
+    <div className="min-h-screen grid lg:grid-cols-2 bg-clinical-bg dark:bg-clinical-bg-dark">
+
+      {/* Visual Side */}
+      <div className="hidden lg:flex relative flex-col justify-center items-center p-12 bg-clinical-primary overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-clinical-primary via-slate-900 to-clinical-teal-dark opacity-90"></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581056771107-24ca5f033842?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none animate-pulse-slow"></div>
+
+        <div className="relative z-10 max-w-lg text-center text-white">
+          <h2 className="text-3xl font-display font-bold mb-6 tracking-tight">
+            Join the <span className="text-cyan-400">Network</span>
+          </h2>
+          <p className="text-lg text-slate-300 leading-relaxed max-w-sm mx-auto">
+            Get access to real-time risk stratification and predictive analytics for better patient outcomes.
+          </p>
+
+          <div className="mt-12 grid grid-cols-2 gap-4 text-left">
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+              <h4 className="font-bold text-clinical-teal mb-1">State of the Art</h4>
+              <p className="text-xs text-slate-400">Ensemble models combining XGBoost, CatBoost, and LightGBM.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+              <h4 className="font-bold text-clinical-teal mb-1">Explainable AI</h4>
+              <p className="text-xs text-slate-400">SHAP values provided for every single prediction.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="w-full max-w-md z-10">
-        {/* Back Button */}
-        <button
-          onClick={onSwitchToLogin}
-          className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium mb-6 transition-colors"
-        >
-          <ArrowLeft size={18} />
-          Back to Login
-        </button>
+      {/* Signup Form Side */}
+      <div className="flex items-center justify-center p-6 sm:p-12 relative">
+        <div className="w-full max-w-md space-y-6 animate-slide-up">
 
-        {/* Logo Section */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Heart className="text-red-500" size={32} />
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              Clinical Risk
-            </h1>
+          <button
+            onClick={onSwitchToLogin}
+            className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-clinical-teal transition-colors mb-4"
+          >
+            <ArrowLeft size={16} />
+            Back to Login
+          </button>
+
+          <div className="text-left mb-8">
+            <h2 className="text-3xl font-bold font-display text-slate-900 dark:text-white mb-2">Create Account</h2>
+            <div className="flex gap-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${step >= i ? 'w-8 bg-clinical-teal' : 'w-4 bg-slate-200 dark:bg-slate-700'}`}></div>
+              ))}
+            </div>
           </div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Join our healthcare network
-          </p>
-        </div>
 
-        {/* Signup Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 transition-all">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-            Create Account
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-8 text-sm">
-            Register to access advanced clinical tools
-          </p>
+          <form onSubmit={handleSubmit} className="space-y-5">
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  First Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={18} />
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    placeholder="John"
-                    className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
-                  />
+            {step === 1 && (
+              <div className="space-y-4 animate-fade-in">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">First Name</label>
+                    <input
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      placeholder="Jane"
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Last Name</label>
+                    <input
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      placeholder="Doe"
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Last Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={18} />
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Doe"
-                    className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
-                  />
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Email</label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="doctor@hospital.org"
+                      className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                      autoFocus
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={18} />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="john.doe@hospital.com"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Specialty & Hospital */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Specialty
-                </label>
-                <select
-                  name="specialty"
-                  value={formData.specialty}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
-                >
-                  <option value="">Select...</option>
-                  <option value="cardiology">Cardiology</option>
-                  <option value="endocrinology">Endocrinology</option>
-                  <option value="nephrology">Nephrology</option>
-                  <option value="pulmonology">Pulmonology</option>
-                  <option value="general">General Medicine</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Hospital
-                </label>
-                <div className="relative">
-                  <Building2 className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={18} />
-                  <input
-                    type="text"
-                    name="hospital"
-                    value={formData.hospital}
-                    onChange={handleInputChange}
-                    placeholder="Hospital name"
-                    className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={18} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Min 8 chars, 1 uppercase, 1 number"
-                  className="w-full pl-9 pr-12 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={18} />
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  placeholder="Confirm your password"
-                  className="w-full pl-9 pr-12 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-2.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400"
-                >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
               </div>
             )}
 
-            {/* Terms */}
-            <label className="flex items-start gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                defaultChecked
-                className="w-4 h-4 rounded border-slate-300 text-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 mt-0.5"
-              />
-              <span className="text-xs text-slate-600 dark:text-slate-400">
-                I agree to the Terms of Service and Privacy Policy
-              </span>
-            </label>
+            {step === 2 && (
+              <div className="space-y-4 animate-fade-in">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Specialty</label>
+                  <select
+                    name="specialty"
+                    value={formData.specialty}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white appearance-none cursor-pointer"
+                  >
+                    <option value="">Select Specialty...</option>
+                    <option value="cardiology">Cardiology</option>
+                    <option value="endocrinology">Endocrinology</option>
+                    <option value="nephrology">Nephrology</option>
+                    <option value="general">General Medicine</option>
+                  </select>
+                </div>
 
-            {/* Signup Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-400 disabled:to-slate-400 text-white font-semibold py-2.5 rounded-lg transition-all transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl mt-6"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Creating Account...
-                </span>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Hospital / Institution</label>
+                  <div className="relative group">
+                    <Building2 className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+                    <input
+                      type="text"
+                      name="hospital"
+                      value={formData.hospital}
+                      onChange={handleInputChange}
+                      placeholder="General Hospital"
+                      className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-4 animate-fade-in">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Password</label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="Min 8 characters"
+                      className="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Confirm Password</label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder="Repeat password"
+                      className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                {error}
+              </div>
+            )}
+
+            <div className="pt-2">
+              {step < 3 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="w-full py-4 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-bold rounded-xl shadow-lg transform active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                >
+                  Next Step
+                  <ArrowRight size={18} />
+                </button>
               ) : (
-                'Create Account'
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-4 bg-gradient-to-r from-clinical-teal to-clinical-teal-dark hover:from-teal-500 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-clinical-teal/20 transform active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Creating Account...</span>
+                    </>
+                  ) : (
+                    'Create Account'
+                  )}
+                </button>
               )}
-            </button>
+            </div>
           </form>
-
-          {/* Divider */}
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-300 dark:border-slate-600"></div>
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="px-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                Already have an account?
-              </span>
-            </div>
-          </div>
-
-          {/* Login Link */}
-          <button
-            type="button"
-            onClick={onSwitchToLogin}
-            className="w-full py-2.5 px-4 rounded-lg border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm"
-          >
-            Sign In Instead
-          </button>
         </div>
-
-        {/* Footer */}
-        <p className="text-center text-xs text-slate-600 dark:text-slate-400 mt-6">
-          Your data is secure and encrypted per HIPAA standards
-        </p>
       </div>
     </div>
   );

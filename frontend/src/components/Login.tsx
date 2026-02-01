@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Heart } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Activity } from 'lucide-react';
 
 interface LoginProps {
   onLoginSuccess: (user: { email: string; name: string }) => void;
@@ -26,10 +26,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
       setError('Password is required');
       return false;
     }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return false;
-    }
     return true;
   };
 
@@ -42,11 +38,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
     setLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise(resolve => setTimeout(resolve, 800));
+
       // Extract name from email for demo
       const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
-      
+
       onLoginSuccess({ email, name });
     } catch (err) {
       setError('Login failed. Please try again.');
@@ -56,159 +52,132 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
-      {/* Animated Background Blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 dark:bg-blue-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 dark:bg-purple-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-2000"></div>
-      </div>
+    <div className="min-h-screen grid lg:grid-cols-2 bg-clinical-bg dark:bg-clinical-bg-dark">
 
-      <div className="w-full max-w-md z-10">
-        {/* Logo Section */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Heart className="text-red-500" size={32} />
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              Clinical Risk
-            </h1>
+      {/* Visual Side */}
+      <div className="hidden lg:flex relative flex-col justify-center items-center p-12 bg-clinical-primary overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-clinical-primary via-slate-900 to-clinical-teal-dark opacity-90"></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-clinical-teal/20 rounded-full blur-[100px] pointer-events-none animate-pulse-slow"></div>
+
+        <div className="relative z-10 max-w-lg text-center text-white">
+          <div className="flex justify-center mb-8">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-clinical-teal to-cyan-500 shadow-neon flex items-center justify-center mb-6">
+              <Activity size={40} className="text-white" strokeWidth={2} />
+            </div>
           </div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm">
-            AI-Powered Healthcare Risk Assessment
+          <h1 className="text-5xl font-display font-bold mb-6 tracking-tight">
+            Astra<span className="text-cyan-400">Med</span>
+          </h1>
+          <p className="text-xl text-slate-300 leading-relaxed">
+            The next generation of clinical risk prediction. Empowering clinicians with interpretable AI and SOTA ensemble models.
           </p>
         </div>
 
-        {/* Login Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 transition-all">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-            Welcome Back
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-8 text-sm">
-            Sign in to access your clinical dashboard
-          </p>
+        {/* Footer info */}
+        <div className="absolute bottom-8 text-slate-500 text-xs flex gap-6">
+          <span>v2.4.0 (BioMistral-7B)</span>
+          <span>HIPAA Compliant</span>
+          <span>256-bit Encryption</span>
+        </div>
+      </div>
+
+      {/* Login Form Side */}
+      <div className="flex items-center justify-center p-6 sm:p-12 relative">
+        <div className="w-full max-w-md space-y-8 animate-slide-up">
+
+          <div className="text-center lg:text-left">
+            <h2 className="text-3xl font-bold font-display text-slate-900 dark:text-white mb-2">Welcome back</h2>
+            <p className="text-slate-500 dark:text-slate-400">Sign in to access your dashboard</p>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={20} />
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Email</label>
+              <div className="relative group">
+                <Mail className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setError('');
-                  }}
-                  placeholder="your.email@example.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
+                  onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                  placeholder="doc@hospital.com"
+                  className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
                 />
               </div>
             </div>
 
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 text-slate-400 dark:text-slate-500" size={20} />
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Password</label>
+              <div className="relative group">
+                <Lock className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setError('');
-                  }}
-                  placeholder="Enter your password"
-                  className="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
+                  onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                  placeholder="Enter password"
+                  className="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
+                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
 
-            {/* Error Message */}
             {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+              <div className="p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                {error}
               </div>
             )}
 
-            {/* Remember & Forgot */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="w-4 h-4 rounded border-slate-300 text-blue-500 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700"
-                />
-                <span className="text-sm text-slate-600 dark:text-slate-400">Remember me</span>
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input type="checkbox" className="rounded border-slate-300 text-clinical-teal focus:ring-clinical-teal" defaultChecked />
+                <span className="text-slate-600 dark:text-slate-400 group-hover:text-clinical-teal transition-colors">Remember me</span>
               </label>
-              <button
-                type="button"
-                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-              >
-                Forgot password?
-              </button>
+              <a href="#" className="font-semibold text-clinical-teal hover:text-clinical-teal-dark transition-colors">Forgot Password?</a>
             </div>
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-400 disabled:to-slate-400 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl mt-6"
+              className="w-full py-4 bg-gradient-to-r from-clinical-teal to-clinical-teal-dark hover:from-teal-500 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-clinical-teal/20 transform active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Signing in...
-                </span>
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Authenticating...</span>
+                </>
               ) : (
                 'Sign In'
               )}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="relative my-6">
+          <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-300 dark:border-slate-600"></div>
+              <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                New to Clinical Risk?
-              </span>
+            <div className="relative flex justify-center">
+              <span className="bg-clinical-bg dark:bg-clinical-bg-dark px-4 text-xs font-medium text-slate-400 uppercase tracking-widest">Or continue with</span>
             </div>
           </div>
 
-          {/* Signup Link */}
-          <button
-            type="button"
-            onClick={onSwitchToSignup}
-            className="w-full py-3 px-4 rounded-lg border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-          >
-            Create an Account
-          </button>
+          <p className="text-center text-slate-600 dark:text-slate-400">
+            Don't have an account?{' '}
+            <button
+              onClick={onSwitchToSignup}
+              className="font-bold text-clinical-teal hover:underline decoration-2 underline-offset-4"
+            >
+              Create Account
+            </button>
+          </p>
         </div>
-
-        {/* Footer */}
-        <p className="text-center text-xs text-slate-600 dark:text-slate-400 mt-6">
-          By signing in, you agree to our{' '}
-          <button className="text-blue-600 dark:text-blue-400 hover:underline">
-            Terms of Service
-          </button>
-          {' '}and{' '}
-          <button className="text-blue-600 dark:text-blue-400 hover:underline">
-            Privacy Policy
-          </button>
-        </p>
       </div>
     </div>
   );

@@ -2,21 +2,22 @@ version: '3.8'
 
 services:
   backend:
-    build: 
+    build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: Dockerfile.backend
     ports:
-      - "8001:8001"
+      - "7860:7860"
     volumes:
-      - ./backend:/app/backend
-      - ./data:/app/data
+      - ./backend/models/weights:/app/backend/models/weights
     environment:
-      - PYTHONUNBUFFERED=1
-    command: uvicorn backend.api:app --host 0.0.0.0 --port 8001 --reload
+      - PORT=7860
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        - VITE_API_URL=http://localhost:7860
     ports:
       - "3000:80"
     depends_on:

@@ -8,20 +8,26 @@ interface RiskGaugeProps {
 const RiskGauge: React.FC<RiskGaugeProps> = ({ riskScore }) => {
     const percentage = Math.round(riskScore * 100);
 
-    // Data for the half-pie chart
-    // We use 3 sections: Low (Green), Medium (Yellow), High (Red) for the background
-    // And a needle or simple value display. 
-    // For simplicity, let's use a single value pie chart that fills up to the score.
-
     const data = [
         { name: 'Score', value: percentage },
         { name: 'Remaining', value: 100 - percentage },
     ];
 
-    // Color interpolation could be better, but simple thresholds for now
-    let color = '#22c55e'; // Green
-    if (riskScore > 0.33) color = '#eab308'; // Yellow
-    if (riskScore > 0.66) color = '#ef4444'; // Red
+    // Clinical palette colors
+    let color = '#2dd4bf'; // teal-400 (Low Risk)
+    let tailwindColorClass = 'text-teal-400';
+    let label = 'Low Risk';
+
+    if (riskScore > 0.3) {
+        color = '#fbbf24'; // amber-400 (Moderate)
+        tailwindColorClass = 'text-amber-400';
+        label = 'Moderate Risk';
+    }
+    if (riskScore > 0.7) {
+        color = '#f43f5e'; // rose-500 (High)
+        tailwindColorClass = 'text-rose-500';
+        label = 'High Risk';
+    }
 
     const cx = "50%";
     const cy = "70%";
@@ -29,7 +35,7 @@ const RiskGauge: React.FC<RiskGaugeProps> = ({ riskScore }) => {
     const oR = 100;
 
     return (
-        <div className="flex flex-col items-center justify-center h-full w-full">
+        <div className="flex flex-col items-center justify-center h-full w-full relative">
             <div className="h-48 w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -46,22 +52,22 @@ const RiskGauge: React.FC<RiskGaugeProps> = ({ riskScore }) => {
                             stroke="none"
                         >
                             <Cell fill={color} />
-                            <Cell fill="#e5e7eb" />
+                            <Cell fill="#e2e8f0" className="dark:fill-slate-700/50" />
                         </Pie>
                     </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute top-[60%] left-1/2 transform -translate-x-1/2 text-center">
-                    <span className="text-4xl font-bold" style={{ color }}>
+                    <span className={`text-5xl font-black tracking-tighter ${tailwindColorClass} drop-shadow-sm`}>
                         {percentage}%
                     </span>
-                    <p className="text-sm text-gray-500 font-medium">
-                        {riskScore < 0.33 ? 'Low Risk' : riskScore < 0.66 ? 'Medium Risk' : 'High Risk'}
+                    <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400 mt-1">
+                        {label}
                     </p>
                 </div>
             </div>
-            <p className="text-xs text-gray-400 mt-[-20px] text-center max-w-[200px]">
-                Based on the provided clinical features.
-            </p>
+            <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full font-bold uppercase tracking-wide mt-[-20px] relative z-10 border border-slate-200 dark:border-slate-700/50">
+                AI Probability
+            </div>
         </div>
     );
 };

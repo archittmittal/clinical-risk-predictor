@@ -38,20 +38,29 @@ const TrendAnalysis: React.FC = () => {
                     <AreaChart data={chartData}>
                         <defs>
                             <linearGradient id="colorRisk" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                <stop offset="5%" stopColor="#0d9488" stopOpacity={0.5} />
+                                <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                        <XAxis dataKey="date" stroke="#9ca3af" fontSize={12} />
-                        <YAxis stroke="#9ca3af" fontSize={12} domain={[0, 100]} unit="%" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
+                        <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} unit="%" tickLine={false} axisLine={false} />
                         <Tooltip
-                            contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '0.5rem', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                            contentStyle={{
+                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                borderRadius: '12px',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                backdropFilter: 'blur(4px)',
+                                color: '#f8fafc',
+                                padding: '8px 12px'
+                            }}
+                            itemStyle={{ color: '#2dd4bf' }}
+                            labelStyle={{ color: '#94a3b8', fontSize: '10px', marginBottom: '4px' }}
                         />
                         <Area
                             type="monotone"
                             dataKey="risk"
-                            stroke="#3b82f6"
+                            stroke="#0d9488"
                             strokeWidth={3}
                             fillOpacity={1}
                             fill="url(#colorRisk)"

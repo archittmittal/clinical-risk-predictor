@@ -4,8 +4,9 @@ import ClinicianDashboard from './components/ClinicianDashboard';
 import AppShell from './components/layout/AppShell';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import AuditLog from './components/AuditLog'; // New
 import { type PredictionResponse, type PredictionInput } from './api/client';
-import { Activity } from 'lucide-react';
+import { Activity, Stethoscope, LineChart, Brain } from 'lucide-react';
 
 interface User {
   email: string;
@@ -17,6 +18,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [view, setView] = useState<'dashboard' | 'logs'>('dashboard'); // New view state
   const [predictionData, setPredictionData] = useState<PredictionResponse | null>(null);
   const [patientData, setPatientData] = useState<PredictionInput | null>(null);
 
@@ -80,38 +82,89 @@ function App() {
 
   // Show main app if authenticated
   return (
-    <AppShell onLogout={handleLogout} user={user}>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-        {/* Left Column: Input Form */}
-        <div className="lg:col-span-4 xl:col-span-4">
-          <PatientInputs onPredictionSuccess={handlePredictionSuccess} />
+    <AppShell
+      onLogout={handleLogout}
+      user={user}
+      currentView={view}
+      onNavigate={(v) => setView(v === 'logs' ? 'logs' : 'dashboard')}
+    >
+      {view === 'logs' ? (
+        <div className="max-w-5xl mx-auto">
+          <AuditLog />
         </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] mx-auto pb-12">
 
-        {/* Right Column: Dashboard */}
-        <div className="lg:col-span-8 xl:col-span-8">
-          {predictionData ? (
-            <ClinicianDashboard
-              prediction={predictionData}
-              patientInput={patientData!}
-              onReset={() => { setPredictionData(null); setPatientData(null); }}
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center h-[600px] bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center transition-all animate-fade-in">
-              <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-full mb-6">
-                <Activity className="text-slate-300 dark:text-slate-600" size={64} strokeWidth={1.5} />
+          {/* Left Column: Input Form */}
+          <div className="lg:col-span-3 space-y-6">
+            <div className="glass-panel p-6 rounded-3xl border-l-4 border-l-clinical-teal flex items-start gap-4">
+              <div className="p-3 rounded-2xl bg-clinical-teal/10 text-clinical-teal">
+                <Stethoscope size={24} strokeWidth={2} />
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                Ready for Assessment
-              </h3>
-              <p className="text-slate-500 max-w-sm leading-relaxed">
-                Enter patient clinical metrics on the left to generate an AI-powered risk profile and treatment plan.
-              </p>
+              <div>
+                <h2 className="text-lg font-display font-bold text-slate-900 dark:text-white">New Assessment</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Enter patient vitals below to generate a multi-model risk profile.</p>
+              </div>
             </div>
-          )}
-        </div>
+            <PatientInputs onPredictionSuccess={handlePredictionSuccess} />
+          </div>
 
-      </div>
+          {/* Right Column: Dashboard */}
+          <div className="lg:col-span-8 xl:col-span-8">
+            {predictionData ? (
+              <ClinicianDashboard
+                prediction={predictionData}
+                patientInput={patientData!}
+                onReset={() => { setPredictionData(null); setPatientData(null); }}
+              />
+            ) : (
+              <div className="glass-panel min-h-[600px] h-full rounded-3xl p-12 flex flex-col items-center justify-center text-center relative overflow-hidden">
+
+                {/* Decorative Elements */}
+                <div className="absolute inset-0 bg-grid-slate-200/50 dark:bg-grid-slate-800/50 [mask-image:radial-gradient(ellipse_at_center,white,transparent)] pointer-events-none"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-clinical-teal/10 to-cyan-500/10 rounded-full blur-[100px] pointer-events-none animate-pulse-slow"></div>
+
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="relative mb-10 group">
+                    <div className="absolute inset-0 bg-clinical-teal/20 blur-xl rounded-full group-hover:bg-clinical-teal/30 transition-all duration-500"></div>
+                    <div className="relative bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-glass ring-1 ring-white/50 dark:ring-white/10">
+                      <Brain className="text-clinical-teal dark:text-teal-400 w-16 h-16" strokeWidth={1.5} />
+                    </div>
+
+                    {/* Floating Icons */}
+                    <div className="absolute -top-4 -right-4 bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-lg animate-bounce delay-100">
+                      <Activity size={20} className="text-cyan-500" />
+                    </div>
+                    <div className="absolute -bottom-4 -left-4 bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-lg animate-bounce delay-300">
+                      <LineChart size={20} className="text-indigo-500" />
+                    </div>
+                  </div>
+
+                  <h3 className="text-4xl font-display font-bold text-slate-900 dark:text-white mb-4 tracking-tight">
+                    Ready for <span className="text-transparent bg-clip-text bg-gradient-to-r from-clinical-teal to-cyan-500">Analysis</span>
+                  </h3>
+
+                  <p className="text-slate-500 dark:text-slate-400 max-w-lg text-lg leading-relaxed mb-10">
+                    Our SOTA ensemble model combined with BioMistral-7B provides explainable risk predictions and digital twin simulations.
+                  </p>
+
+                  <div className="flex gap-4">
+                    <div className="px-5 py-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 text-sm font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                      System Online
+                    </div>
+                    <div className="px-5 py-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 text-sm font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                      v2.0 Models Loaded
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+        </div>
+      )}
     </AppShell>
   );
 }

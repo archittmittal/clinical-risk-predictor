@@ -35,7 +35,7 @@ class HistoryEngine:
         with open(self.storage_file, 'w') as f:
             json.dump(self.history, f, indent=4)
 
-    def save_record(self, patient_data: Dict[str, Any], risk_score: float, risk_level: str):
+    def save_record(self, patient_data: Dict[str, Any], risk_score: float, risk_level: str, clinician_id: str = None, clinician_name: str = None):
         """
         Save a new prediction record.
         """
@@ -45,6 +45,10 @@ class HistoryEngine:
             "risk_assessment": {
                 "score": risk_score,
                 "level": risk_level
+            },
+            "clinician": {
+                "id": clinician_id,
+                "name": clinician_name
             }
         }
         self.history.append(record)

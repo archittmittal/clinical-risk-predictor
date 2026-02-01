@@ -210,3 +210,7 @@ __marimo__/
 backend/models/weights/
 *.gguf
 
+
+# Agent Skills
+.agent/
+.gemini/

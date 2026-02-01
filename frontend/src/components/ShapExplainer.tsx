@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
-import { BarChart3, TrendingUp, Zap, ChevronDown } from 'lucide-react';
+import { BarChart3, TrendingUp, Zap } from 'lucide-react';
 
 interface ShapExplanation {
     feature: string;
@@ -73,7 +73,7 @@ const ShapExplainer: React.FC<ShapExplainerProps> = ({ explanations = [], loadin
 
     // Waterfall data (cumulative)
     let cumulative = 0;
-    const waterfallData = sortedExplanations.map((exp, idx) => {
+    const waterfallData = sortedExplanations.map((exp) => {
         const start = cumulative;
         cumulative += exp.impact_score;
         return {
@@ -93,8 +93,8 @@ const ShapExplainer: React.FC<ShapExplainerProps> = ({ explanations = [], loadin
                     <button
                         onClick={() => setMode('bar')}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${mode === 'bar'
-                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
-                                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                            ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
                             }`}
                     >
                         <BarChart3 size={16} />
@@ -103,8 +103,8 @@ const ShapExplainer: React.FC<ShapExplainerProps> = ({ explanations = [], loadin
                     <button
                         onClick={() => setMode('waterfall')}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${mode === 'waterfall'
-                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
-                                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                            ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
                             }`}
                     >
                         <TrendingUp size={16} />
@@ -113,8 +113,8 @@ const ShapExplainer: React.FC<ShapExplainerProps> = ({ explanations = [], loadin
                     <button
                         onClick={() => setMode('force')}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${mode === 'force'
-                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
-                                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                            ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
                             }`}
                     >
                         <Zap size={16} />
@@ -163,8 +163,8 @@ const ShapExplainer: React.FC<ShapExplainerProps> = ({ explanations = [], loadin
                                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                                     fontSize: '12px'
                                 }}
-                                formatter={(value: number, name: string, props: any) => [
-                                    `${value.toFixed(4)} (${props.payload.description})`,
+                                formatter={(value: any, _name: any, props: any) => [
+                                    `${Number(value).toFixed(4)} (${props.payload.description})`,
                                     'Impact'
                                 ]}
                             />

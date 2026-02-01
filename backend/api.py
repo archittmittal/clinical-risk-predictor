@@ -103,13 +103,17 @@ def predict_risk(patient: PatientRequest):
     
     try:
         data = patient.dict()
+        # Extract metadata
+        c_id = data.pop('clinician_id', None)
+        c_name = data.pop('clinician_name', None)
+
         score = risk_engine.predict_risk(data)
         level = get_risk_level(score)
         
         # Save to history
         if history_engine:
             try:
-                history_engine.save_record(data, score, level)
+                history_engine.save_record(data, score, level, clinician_id=c_id, clinician_name=c_name)
             except Exception as hist_e:
                 print(f"Warning: Failed to save history: {hist_e}")
 
@@ -131,6 +135,10 @@ def explain_risk(patient: PatientRequest):
     
     try:
         data = patient.dict()
+        # Remove metadata if present so it doesn't affect SHAP/Model
+        data.pop('clinician_id', None)
+        data.pop('clinician_name', None)
+        
         explanations = risk_engine.explain_risk(data)
         return {"explanations": explanations}
     except Exception as e:
@@ -159,11 +167,6 @@ def simulate_risk(request: SimulationRequest):
 
 @app.post("/simulate/report", response_model=ReportResponse)
 def generate_simulation_report(request: SimulationRequest):
-    if risk_engine is None:
-        raise HTTPException(status_code=503, detail="Risk Engine not ready")
-    if clinical_llm is None:
-         raise HTTPException(status_code=503, detail="Clinical LLM failed to load.")
-    
     try:
         # Calculate Risks
         original_risk = risk_engine.predict_risk(request.patient.dict())
@@ -173,33 +176,52 @@ def generate_simulation_report(request: SimulationRequest):
         result = cf.predict_simulation(request.patient.dict(), request.modifications)
         new_risk = result['new_risk']
         
-        # Generate Text
-        report = clinical_llm.generate_simulation_report(
-            request.patient.dict(), 
-            result['modified_data'], 
-            original_risk, 
-            new_risk
-        )
+        # Fallback to Mock if LLM is down
+        if clinical_llm is None or clinical_llm.model is None:
+             report = f"Simulated Analysis: Reducing risk factors has improved the projected outcome by {((original_risk - new_risk)*100):.1f}%. Sustained adherence to these targets is expected to yield long-term benefits. (AI Offline)"
+        else:
+            # Generate Text
+            report = clinical_llm.generate_simulation_report(
+                request.patient.model_dump(), 
+                result['modified_data'], 
+                original_risk, 
+                new_risk
+            )
         return {"report": report}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/report", response_model=ReportResponse)
 def generate_report(patient: PatientRequest):
-    if risk_engine is None:
-        raise HTTPException(status_code=503, detail="Risk Engine not ready")
-    if clinical_llm is None:
-         raise HTTPException(status_code=503, detail="Clinical LLM failed to load. Check server logs.")
-    if clinical_llm.model is None:
-         raise HTTPException(status_code=503, detail="Clinical LLM model not loaded (possibly downloading...). Check server console.")
-    
     try:
         data = patient.dict()
+        # Remove metadata
+        data.pop('clinician_id', None)
+        data.pop('clinician_name', None)
+
         score = risk_engine.predict_risk(data)
         level = get_risk_level(score)
         explanations = risk_engine.explain_risk(data)
         
-        report = clinical_llm.generate_report(data, score, level, explanations)
+        # Fallback to Mock if LLM is down
+        if clinical_llm is None or clinical_llm.model is None:
+            print("⚠️ Using Mock AI Report due to missing LLM.")
+            report = f"""
+            **Clinical Validation (Simulated):**
+            Based on the assessment, the patient is classified as **{level.upper()} RISK** (Score: {score:.2f}). 
+            
+            **Key Drivers:**
+            The primary contributing factors appear to be {explanations[0]['feature'] if explanations else 'unknown'} and metabolic indicators.
+            
+            **Recommendations:**
+            1. Initiation of standard lifestyle interventions is recommended.
+            2. Follow-up testing for HbA1c and lipid panel within 3-6 months.
+            3. Consider pharmacological review if risk factors persist.
+            
+            *Note: This is a placeholder report as the local AI model (BioMistral) is currently offline.*
+            """
+        else:
+            report = clinical_llm.generate_report(data, score, level, explanations)
         
         pdf_filename = None
         pdf_url = None
@@ -212,7 +234,7 @@ def generate_report(patient: PatientRequest):
             except Exception as pdf_e:
                 print(f"Error generating PDF: {pdf_e}")
 
-        return {"report": report, "pdf_url": pdf_url}
+        return {"report": report.strip(), "pdf_url": pdf_url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

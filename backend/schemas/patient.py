@@ -10,6 +10,8 @@ class PatientRequest(BaseModel):
     bmi: float
     HbA1c_level: float
     blood_glucose_level: float
+    clinician_id: str = None
+    clinician_name: str = None
 
 class RiskResponse(BaseModel):
     risk_score: float
