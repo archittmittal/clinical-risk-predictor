@@ -1,5 +1,6 @@
 import React, { type ReactNode, useState } from 'react';
 import { Activity, User, LogOut, ChevronDown, Sparkles, LayoutDashboard, FileClock } from 'lucide-react';
+import { Howl } from 'howler';
 
 interface AppShellProps {
     children: ReactNode;
@@ -20,13 +21,22 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
             .toUpperCase();
     };
 
+    const uiClickSound = new Howl({
+        src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-technology-select-3124.mp3'],
+        volume: 0.15
+    });
+
+    const playClick = () => {
+        uiClickSound.play();
+    };
+
     return (
         <div className="min-h-screen font-sans">
             {/* Navbar */}
             <header className="fixed top-4 left-4 right-4 z-50 rounded-2xl glass-panel px-6 h-18 flex items-center justify-between transition-all duration-300">
 
                 {/* Brand */}
-                <button onClick={() => onNavigate?.('dashboard')} className="flex items-center gap-3.5 group">
+                <button onClick={() => { playClick(); onNavigate?.('dashboard'); }} className="flex items-center gap-3.5 group">
                     <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-clinical-teal to-clinical-teal-dark text-white shadow-lg overflow-hidden group-hover:scale-105 transition-transform">
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                         <Activity size={20} strokeWidth={2.5} className="relative z-10" />
@@ -46,7 +56,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
                 <div className="flex items-center gap-5">
                     <nav className="hidden md:flex items-center gap-1 text-sm font-medium text-slate-600 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-800/50 rounded-full px-1.5 py-1 border border-white/20 dark:border-white/5">
                         <button
-                            onClick={() => onNavigate?.('dashboard')}
+                            onClick={() => { playClick(); onNavigate?.('dashboard'); }}
                             className={`px-4 py-1.5 rounded-full transition-all flex items-center gap-2 ${currentView === 'dashboard' ? 'bg-white dark:bg-slate-700 text-clinical-teal dark:text-teal-400 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-slate-700/50'}`}
                         >
                             <LayoutDashboard size={14} />
@@ -54,7 +64,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
                         </button>
                         {user?.email === 'admin@hospital.org' && (
                             <button
-                                onClick={() => onNavigate?.('logs')}
+                                onClick={() => { playClick(); onNavigate?.('logs'); }}
                                 className={`px-4 py-1.5 rounded-full transition-all flex items-center gap-2 ${currentView === 'logs' ? 'bg-white dark:bg-slate-700 text-clinical-teal dark:text-teal-400 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-slate-700/50'}`}
                             >
                                 <FileClock size={14} />
@@ -68,7 +78,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
                     {/* User Menu */}
                     <div className="relative">
                         <button
-                            onClick={() => setShowUserMenu(!showUserMenu)}
+                            onClick={() => { playClick(); setShowUserMenu(!showUserMenu); }}
                             className="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all border border-transparent hover:border-white/40 dark:hover:border-slate-700"
                         >
                             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 dark:from-slate-200 dark:to-slate-400 flex items-center justify-center text-white dark:text-slate-900 text-xs font-bold shadow-md ring-2 ring-white dark:ring-slate-800">
@@ -96,6 +106,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
                                 <div className="space-y-0.5">
                                     <button
                                         onClick={() => {
+                                            playClick();
                                             setShowUserMenu(false);
                                             onLogout?.();
                                         }}
