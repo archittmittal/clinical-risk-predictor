@@ -1,3 +1,13 @@
+---
+title: Astramed Backend
+emoji: 🏥
+colorFrom: teal
+colorTo: blue
+sdk: docker
+pinned: false
+app_port: 7860
+---
+
 <div align="center">
 
 # 🏥 𝐂𝐥𝐢𝐧𝐢𝐜𝐚𝐥 𝐑𝐢𝐬𝐤 𝐏𝐫𝐞𝐝𝐢𝐜𝐭𝐨𝐫
