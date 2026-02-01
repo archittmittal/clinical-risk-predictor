@@ -11,8 +11,8 @@ const ambientSound = new Howl({
     html5: true, // Force HTML5 Audio
     onplay: () => console.log('Audio playing'),
     onload: () => console.log('Audio loaded'),
-    onloaderror: (id, err) => console.error('Audio load error', err),
-    onplayerror: (id, err) => console.error('Audio play error', err)
+    onloaderror: (_id, err) => console.error('Audio load error', err),
+    onplayerror: (_id, err) => console.error('Audio play error', err)
 });
 
 const clickSound = new Howl({
