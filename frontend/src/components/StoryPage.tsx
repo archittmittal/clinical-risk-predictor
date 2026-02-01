@@ -68,12 +68,15 @@ export default function StoryPage({ onComplete }: StoryPageProps) {
                 <motion.div
                     initial={{ y: -50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="absolute top-12 left-0 right-0 flex justify-center items-center gap-3"
+                    transition={{ delay: 0.2, duration: 0.8 }}
+                    className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50"
                 >
-                    <div className="p-2.5 bg-clinical-teal/10 rounded-xl border border-clinical-teal/20 backdrop-blur-md">
-                        <Stethoscope className="w-6 h-6 text-clinical-teal" />
+                    <div className="flex items-center gap-3 px-6 py-2.5 bg-white/5 border border-white/10 rounded-full backdrop-blur-md shadow-2xl ring-1 ring-white/20 hover:bg-white/10 transition-colors cursor-default">
+                        <div className="p-1.5 bg-clinical-teal/20 rounded-full">
+                            <Stethoscope className="w-5 h-5 text-clinical-teal" strokeWidth={2.5} />
+                        </div>
+                        <span className="text-lg font-bold tracking-widest text-white uppercase font-display">Astra Meds</span>
                     </div>
-                    <span className="text-xl font-bold tracking-tight text-white">Astra Meds</span>
                 </motion.div>
 
                 {/* Main Content Area */}
