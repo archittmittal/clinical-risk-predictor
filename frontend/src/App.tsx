@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import PatientInputs from './components/PatientInputs';
-import CentralHub from './components/dashboard/CentralHub';
-import AnalysisRail from './components/dashboard/AnalysisRail';
+import ClinicianDashboard from './components/ClinicianDashboard';
 import AppShell from './components/layout/AppShell';
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -9,7 +8,7 @@ import AuditLog from './components/AuditLog';
 import StoryPage from './components/StoryPage';
 import GlobalBackground from './components/GlobalBackground';
 import { type PredictionResponse, type PredictionInput } from './api/client';
-import { Stethoscope, Brain, Activity, LineChart } from 'lucide-react';
+import { Stethoscope, Brain } from 'lucide-react';
 import DigitalTwinModel from './components/DigitalTwinModel';
 
 interface User {
@@ -111,35 +110,34 @@ function App() {
                 <AuditLog />
               </div>
             ) : (
-              // Main Dashboard Grid - Symmetrical 3-Column Layout (3 | 6 | 3)
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start max-w-[1800px] mx-auto pb-12 px-4 md:px-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] mx-auto pb-12">
 
-                {/* Left Pillar: Input Form (Span 3) */}
+                {/* Left Column: Input Form */}
                 <div className="lg:col-span-3 space-y-6">
-                  <div className="glass-panel p-6 rounded-3xl border-l-4 border-l-clinical-teal flex items-start gap-4 shadow-glass dark:shadow-glass-dark">
+                  <div className="glass-panel p-6 rounded-3xl border-l-4 border-l-clinical-teal flex items-start gap-4">
                     <div className="p-3 rounded-2xl bg-clinical-teal/10 text-clinical-teal">
                       <Stethoscope size={24} strokeWidth={2} />
                     </div>
                     <div>
-                      <h2 className="text-lg font-display font-bold text-slate-900 dark:text-white">Assessment</h2>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Enter vitals to generate risk profile.</p>
+                      <h2 className="text-lg font-display font-bold text-slate-900 dark:text-white">New Assessment</h2>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Enter patient vitals below to generate a multi-model risk profile.</p>
                     </div>
                   </div>
                   <PatientInputs onPredictionSuccess={handlePredictionSuccess} />
                 </div>
 
-                {/* Central Spire: Hero Hub or Placeholder (Span 6) */}
-                <div className="lg:col-span-6 h-full min-h-[800px]">
-                  {predictionData && patientData ? (
-                    <CentralHub
+                {/* Right Column: Dashboard */}
+                <div className="lg:col-span-8 xl:col-span-8">
+                  {predictionData ? (
+                    <ClinicianDashboard
                       prediction={predictionData}
-                      patientInput={patientData}
+                      patientInput={patientData!}
+                      onReset={() => { setPredictionData(null); setPatientData(null); }}
                     />
                   ) : (
-                    // HERO Placeholder
-                    <div className="glass-panel h-full rounded-3xl p-0 flex flex-col items-center justify-center text-center relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border border-white/20 shadow-glass-lg">
+                    <div className="glass-panel min-h-[600px] h-full rounded-3xl p-0 flex flex-col items-center justify-center text-center relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10">
                       {/* 3D Digital Twin Model */}
-                      <div className="absolute inset-0 z-0 opacity-80">
+                      <div className="absolute inset-0 z-0">
                         <DigitalTwinModel />
                       </div>
 
@@ -155,41 +153,19 @@ function App() {
                         </h3>
 
                         <p className="text-slate-500 dark:text-slate-400 max-w-md text-base leading-relaxed mb-8 px-4">
-                          SOTA ensemble model • BioMistral-7B • Digital Twin
+                          Our SOTA ensemble model combined with BioMistral-7B provides explainable risk predictions and digital twin simulations.
                         </p>
 
                         <div className="flex gap-4">
-                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm shadow-sm">
+                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                             System Online
                           </div>
-                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm shadow-sm">
+                          <div className="px-4 py-2 rounded-xl bg-white/40 dark:bg-slate-800/40 border border-white/20 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-2 backdrop-blur-sm">
                             <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                            v3.0 Core
+                            v2.0 Loaded
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right Pillar: Analysis Rail or Placeholder (Span 3) */}
-                <div className="lg:col-span-3 h-full">
-                  {predictionData && patientData ? (
-                    <AnalysisRail prediction={predictionData} patientInput={patientData} />
-                  ) : (
-                    // Skeleton / Info Placeholder
-                    <div className="space-y-6 h-full flex flex-col">
-                      {/* Skeleton 1 */}
-                      <div className="glass-panel p-6 rounded-3xl h-[200px] border border-white/10 flex flex-col items-center justify-center text-slate-400 opacity-60">
-                        <Activity className="mb-2 text-slate-300" />
-                        <span className="text-xs font-bold uppercase tracking-widest">Waiting for Data</span>
-                      </div>
-
-                      {/* Skeleton 2 */}
-                      <div className="glass-panel p-6 rounded-3xl flex-1 border border-white/10 flex flex-col items-center justify-center text-slate-400 opacity-60">
-                        <LineChart className="mb-2 text-slate-300" />
-                        <span className="text-xs font-bold uppercase tracking-widest">Awaiting Analysis</span>
                       </div>
                     </div>
                   )}
