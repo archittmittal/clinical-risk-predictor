@@ -3,7 +3,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial, Stars } from '@react-three/drei';
 // @ts-ignore
 import * as random from 'maath/random/dist/maath-random.esm';
-import * as THREE from 'three';
+// @ts-ignore
+import { easing } from 'maath';
 
 // Reusing ParticleCloud logic but adapted for global state
 function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) {
@@ -11,7 +12,7 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
     // @ts-ignore
     const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }));
 
-    useFrame((_state, delta) => {
+    useFrame((state, delta) => {
         if (ref.current) {
             ref.current.rotation.x -= delta / (10 / speed);
             ref.current.rotation.y -= delta / (15 / speed);
@@ -35,12 +36,16 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
 
 function CameraController({ mode }: { mode: 'story' | 'dashboard' }) {
     useFrame((state, delta) => {
-        const targetZ = mode === 'dashboard' ? 0.5 : 3;
-        // Smooth damp for cinematic feel
-        state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, targetZ, delta * 1.5);
+        const targetZ = mode === 'dashboard' ? 0.2 : 3.5;
+        const targetFov = mode === 'dashboard' ? 85 : 75;
 
-        // Optional: slight rotation or lookAt adjustment
-        // state.camera.rotation.z = THREE.MathUtils.lerp(state.camera.rotation.z, mode === 'dashboard' ? 0.1 : 0, delta);
+        // Damp Z position for smooth "warp" feel
+        // damp3(current, target, smoothTime, delta)
+        easing.damp3(state.camera.position, [0, 0, targetZ], 0.4, delta);
+
+        // Damp FOV for "speed" effect
+        easing.damp(state.camera, 'fov', targetFov, 0.4, delta);
+        state.camera.updateProjectionMatrix();
     });
     return null;
 }
@@ -54,15 +59,10 @@ export default function GlobalBackground({ mode, slideIndex }: GlobalBackgroundP
     // Colors for Story Slides
     const storyColors = ["#f43f5e", "#06b6d4", "#10b981"]; // Rose, Cyan, Emerald
 
-
     const [currentColor, setCurrentColor] = useState(storyColors[0]);
 
     useEffect(() => {
         if (mode === 'dashboard') {
-            // Keep the emerald or switch to a neutral dashboard color?
-            // Actually, staying with emerald or a deep teal fits the theme.
-            // Let's stick with the last Story color (Emerald) but maybe darker?
-            // Or keep it dynamic. Let's stick to Emerald for now.
             setCurrentColor("#0d9488"); // Teal-600
         } else {
             setCurrentColor(storyColors[slideIndex] || storyColors[0]);
@@ -71,15 +71,23 @@ export default function GlobalBackground({ mode, slideIndex }: GlobalBackgroundP
 
     return (
         <div className="fixed inset-0 z-[-1] bg-slate-950">
-            <Canvas camera={{ position: [0, 0, 3], fov: 75 }}>
+            <Canvas camera={{ position: [0, 0, 3], fov: 75 }} dpr={[1, 2]}>
                 <ambientLight intensity={0.5} />
                 <ParticleCloud color={currentColor} speed={mode === 'dashboard' ? 0.5 : 1} />
-                <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+                <Stars
+                    radius={100}
+                    depth={50}
+                    count={5000}
+                    factor={4}
+                    saturation={0}
+                    fade
+                    speed={mode === 'dashboard' ? 2 : 1}
+                />
                 <CameraController mode={mode} />
             </Canvas>
 
             {/* Noise Overlay */}
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+            <div className="absolute inset-0 z-[1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
         </div>
     );
 }
