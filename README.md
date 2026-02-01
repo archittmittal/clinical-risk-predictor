@@ -13,7 +13,7 @@
 
 [**Explore Live App**](https://clinical-risk-predictor-nine.vercel.app/) | [**Test API Engine**](https://huggingface.co/spaces/purvansh01/astramed-bd/docs) | [**View Code**](https://github.com/purvanshjoshi/clinical-risk-predictor)
 
-</div>---
+</div>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
