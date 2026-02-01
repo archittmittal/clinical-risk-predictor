@@ -4,11 +4,11 @@ import { Howl } from 'howler';
 import { Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, VolumeX } from 'lucide-react';
 
 // --- Assets ---
-// Using placeholder sounds for now - these are generic URLs that should work or fail silently
+// Using a soothing ambient track ("Deep Urban Chill" or similar vibe)
 const ambientSound = new Howl({
-    src: ['https://assets.mixkit.co/sfx/preview/mixkit-futuristic-hum-2122.mp3'], // Placeholder
+    src: ['https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3'], // Soothing ambient track
     loop: true,
-    volume: 0.1,
+    volume: 0.5,
     html5: true
 });
 
@@ -39,62 +39,29 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         onSlideChange?.(currentSlide);
     }, [currentSlide, onSlideChange]);
 
-    const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
-
     useEffect(() => {
-        // Load voices
-        const loadVoices = () => {
-            const voices = window.speechSynthesis.getVoices();
-            // Prefer a female voice or a "natural" one for a cleaner AI feel
-            const preferred = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Zira')) || voices[0];
-            setVoice(preferred);
-        };
-
-        loadVoices();
-        window.speechSynthesis.onvoiceschanged = loadVoices;
-
         return () => {
-            window.speechSynthesis.cancel();
             ambientSound.stop();
         };
     }, []);
-
-    const playVoice = (text: string) => {
-        if (muted) return;
-
-        window.speechSynthesis.cancel(); // Stop previous
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (voice) utterance.voice = voice;
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 0.8;
-        window.speechSynthesis.speak(utterance);
-    };
 
     const handleInteraction = () => {
         if (!interacted) {
             setInteracted(true);
             if (!muted) {
                 ambientSound.play();
-                ambientSound.fade(0, 0.1, 2000);
-                // Trigger voice for the first slide on first interaction
-                const firstSlide = slides[0];
-                playVoice(`${firstSlide.title}. ${firstSlide.subtitle} ${firstSlide.description}`);
+                ambientSound.fade(0, 0.5, 3000); // 3s Fade in
             }
         }
     };
 
     const toggleMute = () => {
         if (muted) {
-            ambientSound.fade(0, 0.1, 1000);
+            ambientSound.fade(0, 0.5, 1000);
             setMuted(false);
-            // Resume voice for current slide
-            const slide = slides[currentSlide];
-            playVoice(`${slide.title}. ${slide.subtitle} ${slide.description}`);
         } else {
-            ambientSound.fade(0.1, 0, 500);
+            ambientSound.fade(0.5, 0, 500);
             setMuted(true);
-            window.speechSynthesis.cancel();
         }
     };
 
@@ -128,25 +95,13 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         }
     ];
 
-    useEffect(() => {
-        if (interacted && !muted) {
-            const slide = slides[currentSlide];
-            // Small delay to allow transition sound to start distinctive
-            const timer = setTimeout(() => {
-                playVoice(`${slide.title}. ${slide.subtitle}. ${slide.description}`);
-            }, 300);
-            return () => clearTimeout(timer);
-        }
-    }, [currentSlide]);
-
     const handleNext = () => {
         if (!muted) transitionSound.play();
 
         if (currentSlide < slides.length - 1) {
             setCurrentSlide(prev => prev + 1);
         } else {
-            ambientSound.fade(0.1, 0, 1000);
-            window.speechSynthesis.cancel(); // Stop voice
+            ambientSound.fade(0.5, 0, 1000);
             setTimeout(onComplete, 500);
         }
     };
