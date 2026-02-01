@@ -39,17 +39,48 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         onSlideChange?.(currentSlide);
     }, [currentSlide, onSlideChange]);
 
+    const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
+
     useEffect(() => {
+        // Load voices
+        const loadVoices = () => {
+            const voices = window.speechSynthesis.getVoices();
+            // Prefer a female voice or a "natural" one for a cleaner AI feel
+            const preferred = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Zira')) || voices[0];
+            setVoice(preferred);
+        };
+
+        loadVoices();
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+
         return () => {
+            window.speechSynthesis.cancel();
             ambientSound.stop();
         };
     }, []);
 
+    const playVoice = (text: string) => {
+        if (muted) return;
+
+        window.speechSynthesis.cancel(); // Stop previous
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (voice) utterance.voice = voice;
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.8;
+        window.speechSynthesis.speak(utterance);
+    };
+
     const handleInteraction = () => {
-        if (!interacted && !muted) {
+        if (!interacted) {
             setInteracted(true);
-            ambientSound.play();
-            ambientSound.fade(0, 0.1, 2000);
+            if (!muted) {
+                ambientSound.play();
+                ambientSound.fade(0, 0.1, 2000);
+                // Trigger voice for the first slide on first interaction
+                const firstSlide = slides[0];
+                playVoice(`${firstSlide.title}. ${firstSlide.subtitle} ${firstSlide.description}`);
+            }
         }
     };
 
@@ -57,9 +88,13 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         if (muted) {
             ambientSound.fade(0, 0.1, 1000);
             setMuted(false);
+            // Resume voice for current slide
+            const slide = slides[currentSlide];
+            playVoice(`${slide.title}. ${slide.subtitle} ${slide.description}`);
         } else {
             ambientSound.fade(0.1, 0, 500);
             setMuted(true);
+            window.speechSynthesis.cancel();
         }
     };
 
@@ -93,6 +128,17 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         }
     ];
 
+    useEffect(() => {
+        if (interacted && !muted) {
+            const slide = slides[currentSlide];
+            // Small delay to allow transition sound to start distinctive
+            const timer = setTimeout(() => {
+                playVoice(`${slide.title}. ${slide.subtitle}. ${slide.description}`);
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [currentSlide]);
+
     const handleNext = () => {
         if (!muted) transitionSound.play();
 
@@ -100,6 +146,7 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
             setCurrentSlide(prev => prev + 1);
         } else {
             ambientSound.fade(0.1, 0, 1000);
+            window.speechSynthesis.cancel(); // Stop voice
             setTimeout(onComplete, 500);
         }
     };
