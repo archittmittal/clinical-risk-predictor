@@ -25,7 +25,7 @@ function App() {
   const [showIntro, setShowIntro] = useState(false);
   const [predictionData, setPredictionData] = useState<PredictionResponse | null>(null);
   const [patientData, setPatientData] = useState<PredictionInput | null>(null);
-  const [slideIndex, setSlideIndex] = useState(0);
+  const [patientData, setPatientData] = useState<PredictionInput | null>(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('clinicalRiskUser');
@@ -95,7 +95,6 @@ function App() {
         {showIntro ? (
           <StoryPage
             onComplete={() => setShowIntro(false)}
-            onSlideChange={setSlideIndex}
           />
         ) : (
           <AppShell
