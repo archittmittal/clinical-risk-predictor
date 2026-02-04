@@ -22,7 +22,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
     };
 
     const uiClickSound = new Howl({
-        src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-technology-select-3124.mp3'],
+        src: ['https://actions.google.com/sounds/v1/ui/click_on_2.ogg'],
         volume: 0.15
     });
 
