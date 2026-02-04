@@ -228,7 +228,8 @@ def generate_report(patient: PatientRequest):
         
         if pdf_service:
             try:
-                pdf_filename = pdf_service.generate_report(data, score, level, report)
+                # Generate PDF
+                pdf_filename = pdf_service.generate_report(data, score, level, report, explanations)
                 # Helper to get base URL? For now relative
                 pdf_url = f"/pdfs/{pdf_filename}"
             except Exception as pdf_e:

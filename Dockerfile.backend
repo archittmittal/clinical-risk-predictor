@@ -26,4 +26,7 @@ EXPOSE 7860
 
 # Run the application
 # We run from /app so 'backend.api' is resolved correctly
-CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "7860"]
+# Run with Gunicorn for better concurrency
+# Workers: 2 (Balance between concurrency and RAM usage for 4GB model)
+# Timeout: 120s (Generous for slow LLM inference)
+CMD ["gunicorn", "backend.api:app", "--workers", "2", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:7860", "--timeout", "120"]

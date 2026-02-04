@@ -62,7 +62,8 @@ class ClinicalLLM:
             with contextlib.redirect_stderr(stderr_capture):
                 # Initialize GPT4All model
                 # allow_download=False because we manually downloaded it
-                self.model = GPT4All(model_name=self.filename, model_path=self.weights_dir, allow_download=False, device='cpu')
+                # Limit threads per worker to avoid CPU thrashing when multiple workers are active
+                self.model = GPT4All(model_name=self.filename, model_path=self.weights_dir, allow_download=False, device='cpu', n_threads=4)
             
             print("✅ Clinical Model loaded successfully.")
         except Exception as e:
@@ -90,30 +91,36 @@ class ClinicalLLM:
         # 2. Construct Prompt (BioMistral friendly)
         prompt = f"""
 ### Instruction:
-You are an expert medical AI assistant. Generate a professional clinical risk assessment report for a doctor based on the following patient data.
+You are an expert Chief Medical Officer. Generate a detailed, evidence-based clinical assessment and care plan for the following patient.
 
 **Patient Profile:**
-- Age: {patient_data.get('age')} years
-- Gender: {patient_data.get('gender')}
-- BMI: {patient_data.get('bmi')}
+- Age: {patient_data.get('age')} | Gender: {patient_data.get('gender')}
+- BMI: {patient_data.get('bmi')} (Classification: {'Obese' if patient_data.get('bmi') >= 30 else 'Overweight' if patient_data.get('bmi') >= 25 else 'Normal'})
 - HbA1c: {patient_data.get('HbA1c_level')}%
 - Glucose: {patient_data.get('blood_glucose_level')} mg/dL
-- Hypertension: {'Yes' if patient_data.get('hypertension') else 'No'}
-- Heart Disease: {'Yes' if patient_data.get('heart_disease') else 'No'}
-- Smoking: {patient_data.get('smoking_history')}
+- History: {patient_data.get('smoking_history')} smoker, {'Hypertensive' if patient_data.get('hypertension') else 'Normotensive'}, {'Heart Disease History' if patient_data.get('heart_disease') else 'No Heart Disease'}
 
-**Risk Analysis:**
-- Calculated Risk Score: {risk_score:.2f} (0-1 Scale)
-- Risk Category: {risk_level.upper()}
-- Top Contributing Factors:
-{factors_text}
+**Risk Model Output:**
+- Risk Score: {risk_score:.2f} / 1.00
+- Category: {risk_level.upper()} RISK
+- Key Drivers: {factors_text}
 
 **Task:**
-Write a concise 1-paragraph clinical summary.
-- Start with the risk level.
-- Mention the key driving factors.
-- Provide specific, actionable medical recommendations.
-- Maintain a professional, objective tone.
+Provide a professional medical report in two distinct sections as follows:
+
+**1. Clinical Assessment**
+Provide a descriptive analysis of the patient's health status. Do not just list the data; interpret it. Explain *why* the risk score is {risk_level}. Discuss the interplay between their vitals (e.g., impact of BMI on metabolic markers). Use **bold** for key medical terms.
+
+**2. Recommendations**
+Provide 3-4 specific, actionable steps based on standard clinical guidelines (ADA/ACC).
+- Suggest specific lifestyle targets (e.g., "Target BMI < 25").
+- Mention relevant screening tests or referrals.
+- Suggest pharmacological classes to *consider* (do not prescribe, just suggest classes like "Consider statin therapy" or "Metformin initiation" if appropriate for the profile).
+
+**Format:**
+- Use **Bold** for headers.
+- Use bullet points for recommendations.
+- Keep the total response under 250 words but ensure it is high-density info.
 
 ### Response:
 """
@@ -121,7 +128,8 @@ Write a concise 1-paragraph clinical summary.
         # 3. Generate
         try:
             # GPT4All generate method
-            output = self.model.generate(prompt, max_tokens=300, temp=0.7)
+            # Increased tokens to 500 for descriptive report, Temp 0.2 for creativity balance
+            output = self.model.generate(prompt, max_tokens=500, temp=0.2)
             return output.strip()
         except Exception as e:
             return f"Error during generation: {e}"
@@ -168,7 +176,8 @@ Write a short, motivating clinical explanation of WHY these specific changes led
 ### Response:
 """
         try:
-            output = self.model.generate(prompt, max_tokens=150, temp=0.7)
+            # Optimized for speed
+            output = self.model.generate(prompt, max_tokens=100, temp=0.1)
             return output.strip()
         except Exception as e:
             return f"Error during generation: {e}"

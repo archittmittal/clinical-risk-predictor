@@ -214,3 +214,6 @@ backend/models/weights/
 # Agent Skills
 .agent/
 .gemini/
+
+# Generated PDFs
+backend/pdfs/
