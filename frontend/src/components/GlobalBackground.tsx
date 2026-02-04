@@ -78,12 +78,9 @@ export default function GlobalBackground({ mode = 'story' }: { mode?: 'story' | 
     const [currentColor, setCurrentColor] = useState(colors[mode]);
 
     useEffect(() => {
-        if (mode === 'dashboard') {
-            setCurrentColor("#0d9488"); // Teal-600
-        } else {
-            setCurrentColor(storyColors[slideIndex] || storyColors[0]);
-        }
-    }, [mode, slideIndex]);
+        // Simple instant transition for stability
+        setCurrentColor(colors[mode]);
+    }, [mode]);
 
     return (
         <div className="fixed inset-0 z-[-1] bg-slate-950">
