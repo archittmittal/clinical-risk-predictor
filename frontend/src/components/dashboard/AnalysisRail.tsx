@@ -74,7 +74,7 @@ const AnalysisRail: React.FC<AnalysisRailProps> = ({ prediction: _prediction, pa
                     {loadingReport ? (
                         <div className="py-12 flex flex-col items-center justify-center text-slate-400 gap-3 flex-grow">
                             <Loader2 className="animate-spin text-clinical-teal" size={32} />
-                            <span className="text-xs font-medium uppercase tracking-widest">Analysing...</span>
+                            <span className="text-xs font-medium uppercase tracking-widest text-center px-4">Please wait. Summary and PDF report are being generated...</span>
                         </div>
                     ) : report ? (
                         <div className="bg-slate-50/50 dark:bg-slate-900/30 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 text-xs leading-6 text-slate-700 dark:text-slate-300 font-medium overflow-y-auto flex-grow shadow-inner custom-scrollbar relative">
