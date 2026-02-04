@@ -4,7 +4,7 @@ import { Howl } from 'howler';
 import { Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, VolumeX } from 'lucide-react';
 
 // --- Assets ---
-// Using stable Wikimedia Commons (Ambient) and inferred GitHub paths (SFX)
+// Using stable Wikimedia Commons URLs
 const ambientSound = new Howl({
     src: ['https://upload.wikimedia.org/wikipedia/commons/e/e0/Dreamstate_Logic_-_Zero_Point_%28space_ambient%2C_dark_ambient%29.ogg'],
     loop: true,
@@ -13,13 +13,13 @@ const ambientSound = new Howl({
 });
 
 const clickSound = new Howl({
-    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi%2001.mp3'],
+    src: ['https://upload.wikimedia.org/wikipedia/commons/c/c3/Short_Beep.ogg'],
     volume: 0.2,
     // html5: false
 });
 
 const transitionSound = new Howl({
-    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi%2002.mp3'],
+    src: ['https://upload.wikimedia.org/wikipedia/commons/4/43/Bubbles_f_major.ogg'],
     volume: 0.2,
     // html5: false
 });
