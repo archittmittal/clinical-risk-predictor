@@ -5,25 +5,22 @@ import { Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, Volum
 
 // --- Assets ---
 // --- Assets ---
+// Using stable GitHub Raw links for reliable audio (Creative Commons 4.0 International)
 const ambientSound = new Howl({
-    src: ['https://actions.google.com/sounds/v1/science_fiction/humanoid_drone.ogg'],
+    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/master/SciFi/SciFi_Drone.wav'],
     loop: true,
-    volume: 0.5, // Reduced volume for drone
+    volume: 0.3,
     html5: true,
-    onplay: () => console.log('Audio playing'),
-    onload: () => console.log('Audio loaded'),
-    onloaderror: (_id, err) => console.error('Audio load error', err),
-    onplayerror: (_id, err) => console.error('Audio play error', err)
 });
 
 const clickSound = new Howl({
-    src: ['https://actions.google.com/sounds/v1/ui/click_on_2.ogg'],
+    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/master/SciFi/SciFi_UI_Click_High.wav'],
     volume: 0.2
 });
 
 const transitionSound = new Howl({
-    src: ['https://actions.google.com/sounds/v1/science_fiction/air_woosh_underwater.ogg'],
-    volume: 0.25
+    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/master/SciFi/SciFi_Whoosh_Airy.wav'],
+    volume: 0.2
 });
 
 // --- Main UI Component ---
