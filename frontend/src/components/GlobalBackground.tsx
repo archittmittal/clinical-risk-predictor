@@ -87,15 +87,7 @@ export default function GlobalBackground({ mode = 'story' }: { mode?: 'story' | 
             <Canvas camera={{ position: [0, 0, 3], fov: 75 }} dpr={1}>
                 <ambientLight intensity={0.5} />
                 <ParticleCloud color={currentColor} speed={mode === 'dashboard' ? 0.5 : 1} />
-                <Stars
-                    radius={100}
-                    depth={50}
-                    count={5000}
-                    factor={4}
-                    saturation={0}
-                    fade
-                    speed={mode === 'dashboard' ? 2 : 1}
-                />
+
                 <CameraController mode={mode} />
             </Canvas>
 
