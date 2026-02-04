@@ -16,18 +16,18 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the backend code into /app/backend to maintain package structure
-# Copy the backend code into /app/backend to maintain package structure
 COPY backend ./backend
 
-# Copy data directory (Required for Cohort Engine)
+# CRITICAL: Copy data directory (Required for Cohort Engine)
 COPY data ./data
 
 # Create a writable directory for the model (Hugging Face Spaces requirement)
 RUN mkdir -p /app/backend/models/weights && chmod -R 777 /app/backend/models/weights
 
-# Expose the port Hugging Face Spaces expects (7860)
+# Expose the port
 EXPOSE 7860
 
-# Run the application
-# We run from /app so 'backend.api' is resolved correctly
-CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "7860"]
+# Run with Gunicorn for production-grade concurrency
+# Workers: 2 (Fit in 16GB/vCPU limits usually)
+# Timeout: 120s (For LLM)
+CMD ["gunicorn", "backend.api:app", "--workers", "2", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:7860", "--timeout", "120"]
