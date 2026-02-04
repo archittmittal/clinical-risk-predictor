@@ -55,12 +55,7 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         });
 
         // Try auto-play if allowed
-        const unlock = () => {
-            ambientSound.play();
-            ambientSound.fade(0, 0.3, 2000);
-            setInteracted(true);
-            setAudioStatus('playing');
-        };
+
 
         // If not blocked, this might work
         // ambientSound.play(); 
