@@ -89,7 +89,6 @@ function App() {
     <div className="relative w-full min-h-screen">
       <GlobalBackground
         mode={showIntro ? 'story' : 'dashboard'}
-        slideIndex={slideIndex}
       />
 
       <div className="relative z-10">
