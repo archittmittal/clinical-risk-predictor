@@ -15,13 +15,13 @@ const ambientSound = new Howl({
 const clickSound = new Howl({
     src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi%2001.mp3'],
     volume: 0.2,
-    html5: true, // Prevent AudioContext pool exhaustion
+    // html5: false
 });
 
 const transitionSound = new Howl({
     src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi%2002.mp3'],
     volume: 0.2,
-    html5: true,
+    // html5: false
 });
 
 // --- Main UI Component ---
