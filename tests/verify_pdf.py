@@ -25,6 +25,8 @@ risk_level = "High"
 explanations = [
     {"feature": "HbA1c_level", "value": 7.8, "impact": 0.15},
     {"feature": "BMI", "value": 29.5, "impact": 0.12},
+    {"feature": "Glucose_HbA1c_Interaction", "value": 1200, "impact": 0.11}, # Should be filtered
+    {"feature": "Age_Category", "value": "Middle", "impact": 0.09}, # Should be filtered
     {"feature": "blood_glucose_level", "value": 160, "impact": 0.10},
     {"feature": "hypertension", "value": 1, "impact": 0.08}
 ]
