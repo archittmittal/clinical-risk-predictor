@@ -43,48 +43,38 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
     }, [currentSlide, onSlideChange]);
 
     useEffect(() => {
-        ambientSound.on('load', () => setAudioStatus('loading'));
-        ambientSound.on('play', () => setAudioStatus('playing'));
+        const handleStateChange = () => {
+            if (ambientSound.playing()) setAudioStatus('playing');
+        };
+
+        ambientSound.on('play', handleStateChange);
         ambientSound.on('loaderror', () => {
             console.warn("Ambient load error");
             setAudioStatus('error');
         });
 
-        // Global unlocker for Web Audio API
-        const unlockAudio = () => {
-            if (Howler.ctx.state === 'suspended') {
-                Howler.ctx.resume().then(() => {
-                    console.log("AudioContext resumed globally");
-                    ambientSound.play();
-                    setInteracted(true);
-                    setAudioStatus('playing');
-                });
-            } else if (!ambientSound.playing() && !muted) {
-                ambientSound.play();
-                setInteracted(true);
-                setAudioStatus('playing');
-            }
-
-            // Remove listener after first successful interaction
-            document.removeEventListener('click', unlockAudio);
-            document.removeEventListener('touchstart', unlockAudio);
-        };
-
-        document.addEventListener('click', unlockAudio);
-        document.addEventListener('touchstart', unlockAudio);
+        // Attempt autoplay once on mount
+        ambientSound.play();
 
         return () => {
             ambientSound.stop();
             ambientSound.off();
-            document.removeEventListener('click', unlockAudio);
-            document.removeEventListener('touchstart', unlockAudio);
         };
     }, []);
 
     const handleInteraction = () => {
-        // Redundant fallback if global listener misses (rare)
+        // 1. Immediate UI feedback: Hide overlay immediately
+        setInteracted(true);
+
+        // 2. Resume Audio Context (Browser requirement)
         if (Howler.ctx.state === 'suspended') {
-            Howler.ctx.resume();
+            Howler.ctx.resume().then(() => {
+                ambientSound.play();
+                setAudioStatus('playing');
+            }).catch(err => console.error("Audio resume failed", err));
+        } else {
+            ambientSound.play();
+            setAudioStatus('playing');
         }
     };
 

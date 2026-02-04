@@ -95,7 +95,15 @@ export default function GlobalBackground({ mode = 'story' }: { mode?: 'story' | 
 
     return (
         <div className="fixed inset-0 z-[-1] bg-slate-950">
-            <Canvas camera={{ position: [0, 0, 3], fov: 75 }} dpr={1}>
+            <Canvas
+                camera={{ position: [0, 0, 3], fov: 75 }}
+                dpr={[1, 1.5]} // Allow slight quality bump if possible, but keep low
+                gl={{
+                    powerPreference: "default",
+                    failIfMajorPerformanceCaveat: true,
+                    preserveDrawingBuffer: false
+                }}
+            >
                 <ambientLight intensity={0.5} />
                 <ParticleCloud color={currentColor} speed={1} />
                 <CameraController mode={mode} />
