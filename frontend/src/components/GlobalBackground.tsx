@@ -12,7 +12,7 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
 
     // Manual sphere generation to avoid NaN issues from maath
     const [sphere] = useState(() => {
-        const count = 1000; // Further reduced for stability
+        const count = 400; // Aggressive reduction for extreme stability
         const radius = 1.5;
         const points = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
