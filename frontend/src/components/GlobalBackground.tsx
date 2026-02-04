@@ -12,7 +12,7 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
 
     // Manual sphere generation to avoid NaN issues from maath
     const [sphere] = useState(() => {
-        const count = 400; // Aggressive reduction for extreme stability
+        const count = 200; // Minimalist count to ensure stability on all devices
         const radius = 1.5;
         const points = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
@@ -31,8 +31,8 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
 
     useFrame((_state, delta) => {
         if (ref.current) {
-            ref.current.rotation.x -= delta / (10 / speed);
-            ref.current.rotation.y -= delta / (15 / speed);
+            ref.current.rotation.x -= delta / 10 * speed;
+            ref.current.rotation.y -= delta / 15 * speed;
         }
     });
 
@@ -67,16 +67,15 @@ function CameraController({ mode }: { mode: 'story' | 'dashboard' }) {
     return null;
 }
 
-interface GlobalBackgroundProps {
-    mode: 'story' | 'dashboard';
-    slideIndex: number;
-}
+export default function GlobalBackground({ mode = 'story' }: { mode?: 'story' | 'dashboard' }) {
+    // Mode-based colors
+    const colors = {
+        story: "#fb7185",     // rose-400
+        dashboard: "#34d399", // emerald-400
+    };
 
-export default function GlobalBackground({ mode, slideIndex }: GlobalBackgroundProps) {
-    // Colors for Story Slides
-    const storyColors = ["#f43f5e", "#06b6d4", "#10b981"]; // Rose, Cyan, Emerald
-
-    const [currentColor, setCurrentColor] = useState(storyColors[0]);
+    // Smooth color transition
+    const [currentColor, setCurrentColor] = useState(colors[mode]);
 
     useEffect(() => {
         if (mode === 'dashboard') {

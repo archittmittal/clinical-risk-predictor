@@ -46,43 +46,45 @@ export default function StoryPage({ onComplete, onSlideChange }: StoryPageProps)
         ambientSound.on('load', () => setAudioStatus('loading'));
         ambientSound.on('play', () => setAudioStatus('playing'));
         ambientSound.on('loaderror', () => {
-            console.warn("Ambient load error - trying refresh");
+            console.warn("Ambient load error");
             setAudioStatus('error');
         });
-        ambientSound.on('playerror', () => {
-            console.warn("Ambient play error - needs interaction");
-            setAudioStatus('waiting');
-        });
 
-        // Try auto-play if allowed
-
-
-        // If not blocked, this might work
-        // ambientSound.play(); 
-
-        return () => {
-            ambientSound.stop();
-            ambientSound.off();
-        };
-    }, []);
-
-    const handleInteraction = () => {
-        if (!interacted || audioStatus !== 'playing') {
-            // Unlock AudioContext
+        // Global unlocker for Web Audio API
+        const unlockAudio = () => {
             if (Howler.ctx.state === 'suspended') {
                 Howler.ctx.resume().then(() => {
-                    console.log("AudioContext resumed");
+                    console.log("AudioContext resumed globally");
                     ambientSound.play();
                     setInteracted(true);
                     setAudioStatus('playing');
                 });
-            } else {
-                if (!ambientSound.playing() && !muted) {
-                    ambientSound.play();
-                    setInteracted(true);
-                    setAudioStatus('playing');
-                }
+            } else if (!ambientSound.playing() && !muted) {
+                ambientSound.play();
+                setInteracted(true);
+                setAudioStatus('playing');
             }
+
+            // Remove listener after first successful interaction
+            document.removeEventListener('click', unlockAudio);
+            document.removeEventListener('touchstart', unlockAudio);
+        };
+
+        document.addEventListener('click', unlockAudio);
+        document.addEventListener('touchstart', unlockAudio);
+
+        return () => {
+            ambientSound.stop();
+            ambientSound.off();
+            document.removeEventListener('click', unlockAudio);
+            document.removeEventListener('touchstart', unlockAudio);
+        };
+    }, []);
+
+    const handleInteraction = () => {
+        // Redundant fallback if global listener misses (rare)
+        if (Howler.ctx.state === 'suspended') {
+            Howler.ctx.resume();
         }
     };
 
