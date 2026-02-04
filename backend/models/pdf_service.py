@@ -260,10 +260,20 @@ class PDFService:
                 val = str(item.get('feature_value', item.get('value', '-')))
                 # Simple logic for status
                 status = "Normal"
-                # Mock logic if not provided
-                if 'bmi' in feature.lower() and float(val) > 25: status = "Elevated"
-                elif 'glu' in feature.lower() and float(val) > 100: status = "High"
-                elif 'a1c' in feature.lower() and float(val) > 6: status = "Elevated"
+                
+                def safe_float(v):
+                    try:
+                        return float(v)
+                    except (ValueError, TypeError):
+                        return None
+                
+                f_val = safe_float(val)
+                
+                if f_val is not None:
+                    # Mock logic if not provided
+                    if 'bmi' in feature.lower() and f_val > 25: status = "Elevated"
+                    elif 'glu' in feature.lower() and f_val > 100: status = "High"
+                    elif 'a1c' in feature.lower() and f_val > 6: status = "Elevated"
                 
                 pdf.cell(60, 7, f"  {feature}", 'B', 0)
                 pdf.cell(40, 7, f"{val}", 'B', 0)
