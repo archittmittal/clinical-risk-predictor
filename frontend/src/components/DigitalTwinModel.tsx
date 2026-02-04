@@ -7,7 +7,7 @@ import * as random from 'maath/random/dist/maath-random.esm';
 function Particles() {
     const ref = useRef<any>(null);
     // @ts-ignore
-    const [sphere] = useState(() => random.inSphere(new Float32Array(3000), { radius: 1.2 }));
+    const [sphere] = useState(() => random.inSphere(new Float32Array(600), { radius: 1.2 })); // Reduced from 3000
 
     useFrame((_state, delta) => {
         if (ref.current) {
@@ -43,7 +43,7 @@ function AnimatedCore() {
     });
 
     return (
-        <Sphere ref={meshRef} args={[0.8, 64, 64]} scale={[0.8, 0.8, 0.8]}>
+        <Sphere ref={meshRef} args={[0.8, 32, 32]} scale={[0.8, 0.8, 0.8]}>
             <MeshDistortMaterial
                 color="#2dd4bf" // clinical-teal-400
                 attach="material"

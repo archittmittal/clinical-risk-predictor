@@ -82,12 +82,22 @@ export default function GlobalBackground({ mode = 'story' }: { mode?: 'story' | 
         setCurrentColor(colors[mode]);
     }, [mode]);
 
+    // If in dashboard mode, use a static CSS background to save WebGL context for the Digital Twin
+    if (mode === 'dashboard') {
+        return (
+            <div className="fixed inset-0 z-[-1] bg-slate-950 transition-colors duration-700">
+                <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/10 to-slate-950/90" />
+                {/* Noise Overlay */}
+                <div className="absolute inset-0 z-[1] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNTAnIGhlaWdodD0nMjUwJz48ZmlsdGVyIGlkPSdub2lzZSc+PGZlVHVyYnVsZW5jZSB0eXBlPSdmcmFjdGFsTm9pc2UnIGJhc2VGcmVxdWVuY3k9JzAuNjUnIG51bXZvY3RhdmVzPSczJyBzdGl0Y2hUaWxlcz0nc3RpdGNoJy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzEwMCUnIGhlaWdodD0nMTAwJScgZmlsdGVyPSd1cmwoI25vaXNlKScgb3BhY2l0eT0nMC4wNScvPjwvc3ZnPg==')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="fixed inset-0 z-[-1] bg-slate-950">
             <Canvas camera={{ position: [0, 0, 3], fov: 75 }} dpr={1}>
                 <ambientLight intensity={0.5} />
-                <ParticleCloud color={currentColor} speed={mode === 'dashboard' ? 0.5 : 1} />
-
+                <ParticleCloud color={currentColor} speed={1} />
                 <CameraController mode={mode} />
             </Canvas>
 
