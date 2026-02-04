@@ -4,23 +4,24 @@ import { Howl } from 'howler';
 import { Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, VolumeX } from 'lucide-react';
 
 // --- Assets ---
-// --- Assets ---
-// Using stable GitHub Raw links for reliable audio (Creative Commons 4.0 International)
+// Using stable Wikimedia Commons (Ambient) and inferred GitHub paths (SFX)
 const ambientSound = new Howl({
-    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi_Drone.wav'],
+    src: ['https://upload.wikimedia.org/wikipedia/commons/e/e0/Dreamstate_Logic_-_Zero_Point_%28space_ambient%2C_dark_ambient%29.ogg'],
     loop: true,
     volume: 0.3,
     html5: true,
 });
 
 const clickSound = new Howl({
-    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi_UI_Click_High.wav'],
-    volume: 0.2
+    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi%2001.mp3'],
+    volume: 0.2,
+    html5: true, // Prevent AudioContext pool exhaustion
 });
 
 const transitionSound = new Howl({
-    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi_Whoosh_Airy.wav'],
-    volume: 0.2
+    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi%2002.mp3'],
+    volume: 0.2,
+    html5: true,
 });
 
 // --- Main UI Component ---
