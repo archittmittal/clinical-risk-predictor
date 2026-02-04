@@ -12,7 +12,7 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
 
     // Manual sphere generation to avoid NaN issues from maath
     const [sphere] = useState(() => {
-        const count = 1500; // Reduced from 5000 to prevent WebGL Context Lost
+        const count = 1000; // Further reduced for stability
         const radius = 1.5;
         const points = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
@@ -88,7 +88,7 @@ export default function GlobalBackground({ mode, slideIndex }: GlobalBackgroundP
 
     return (
         <div className="fixed inset-0 z-[-1] bg-slate-950">
-            <Canvas camera={{ position: [0, 0, 3], fov: 75 }} dpr={[1, 2]}>
+            <Canvas camera={{ position: [0, 0, 3], fov: 75 }} dpr={1}>
                 <ambientLight intensity={0.5} />
                 <ParticleCloud color={currentColor} speed={mode === 'dashboard' ? 0.5 : 1} />
                 <Stars

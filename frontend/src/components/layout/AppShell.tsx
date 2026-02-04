@@ -23,8 +23,8 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
 
     const uiClickSound = new Howl({
         src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi%2001.mp3'],
-        volume: 0.15,
-        html5: true
+        volume: 0.15
+        // html5: false to prevent locking the audio pool
     });
 
     const playClick = () => {
