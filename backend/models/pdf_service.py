@@ -255,9 +255,24 @@ class PDFService:
             pdf.cell(80, 8, "Clinical Impact", 0, 1, 'L', True)
             
             pdf.set_font('Helvetica', '', 9)
+            pdf.set_font('Helvetica', '', 9)
+            
+            # Filter and Limit
+            count = 0
             for item in explanations:
-                feature = item.get('feature', '').replace('_', ' ').title()
-                val = str(item.get('feature_value', item.get('value', '-')))
+                feature_raw = item.get('feature', '')
+                # Skip technical/interaction terms
+                if 'Interaction' in feature_raw or 'Category' in feature_raw:
+                    continue
+                # Skip encoded columns if any
+                if '_cat' in feature_raw:
+                    continue
+                    
+                if count >= 5: break # Max 5 drivers
+                count += 1
+
+                feature = feature_raw.replace('_', ' ').title()
+                val = str(item.get('value', '-'))
                 # Simple logic for status
                 status = "Normal"
                 

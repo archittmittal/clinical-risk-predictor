@@ -141,8 +141,16 @@ class RiskEngine:
             if value > 0.01: impact = "Increase Risk"
             elif value < -0.01: impact = "Decrease Risk"
             
+            try:
+                val = df.iloc[0][name]
+                # Convert numpy types to native Python
+                if hasattr(val, 'item'): val = val.item()
+            except:
+                val = "-"
+
             explanations.append({
                 "feature": name,
+                "value": val, # Add this
                 "impact_score": float(value),
                 "impact_description": impact
             })
