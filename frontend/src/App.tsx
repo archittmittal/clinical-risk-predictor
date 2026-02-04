@@ -25,7 +25,7 @@ function App() {
   const [showIntro, setShowIntro] = useState(false);
   const [predictionData, setPredictionData] = useState<PredictionResponse | null>(null);
   const [patientData, setPatientData] = useState<PredictionInput | null>(null);
-  const [patientData, setPatientData] = useState<PredictionInput | null>(null);
+
 
   useEffect(() => {
     const storedUser = localStorage.getItem('clinicalRiskUser');
