@@ -7,19 +7,19 @@ import { Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, Volum
 // --- Assets ---
 // Using stable GitHub Raw links for reliable audio (Creative Commons 4.0 International)
 const ambientSound = new Howl({
-    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/master/SciFi/SciFi_Drone.wav'],
+    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi_Drone.wav'],
     loop: true,
     volume: 0.3,
     html5: true,
 });
 
 const clickSound = new Howl({
-    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/master/SciFi/SciFi_UI_Click_High.wav'],
+    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi_UI_Click_High.wav'],
     volume: 0.2
 });
 
 const transitionSound = new Howl({
-    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/master/SciFi/SciFi_Whoosh_Airy.wav'],
+    src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi_Whoosh_Airy.wav'],
     volume: 0.2
 });
 
