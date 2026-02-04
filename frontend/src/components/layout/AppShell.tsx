@@ -22,7 +22,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
     };
 
     const uiClickSound = new Howl({
-        src: ['https://upload.wikimedia.org/wikipedia/commons/c/c3/Short_Beep.ogg'],
+        src: ['/sounds/click.wav'],
         volume: 0.15
         // html5: false to prevent locking the audio pool
     });
