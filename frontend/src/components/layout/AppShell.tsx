@@ -23,8 +23,8 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
 
     const uiClickSound = new Howl({
         src: ['/sounds/click.wav'],
-        volume: 0.15
-        // html5: false to prevent locking the audio pool
+        volume: 0.15,
+        html5: false // Use Web Audio API for responsiveness and to avoid pool limits
     });
 
     const playClick = () => {
