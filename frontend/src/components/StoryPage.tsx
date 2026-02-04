@@ -4,11 +4,12 @@ import { Howl } from 'howler';
 import { Activity, Brain, ShieldCheck, ChevronRight, Stethoscope, Volume2, VolumeX } from 'lucide-react';
 
 // --- Assets ---
+// --- Assets ---
 const ambientSound = new Howl({
-    src: ['https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3'],
+    src: ['https://actions.google.com/sounds/v1/science_fiction/humanoid_drone.ogg'],
     loop: true,
-    volume: 1.0, // Max volume for debugging
-    html5: true, // Force HTML5 Audio
+    volume: 0.5, // Reduced volume for drone
+    html5: true,
     onplay: () => console.log('Audio playing'),
     onload: () => console.log('Audio loaded'),
     onloaderror: (_id, err) => console.error('Audio load error', err),
@@ -16,13 +17,13 @@ const ambientSound = new Howl({
 });
 
 const clickSound = new Howl({
-    src: ['https://assets.mixkit.co/sfx/preview/mixkit-modern-technology-select-3124.mp3'],
+    src: ['https://actions.google.com/sounds/v1/ui/click_on_2.ogg'],
     volume: 0.2
 });
 
 const transitionSound = new Howl({
-    src: ['https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-interface-click-901.mp3'],
-    volume: 0.15
+    src: ['https://actions.google.com/sounds/v1/science_fiction/air_woosh_underwater.ogg'],
+    volume: 0.25
 });
 
 // --- Main UI Component ---

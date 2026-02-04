@@ -9,8 +9,25 @@ import { easing } from 'maath';
 // Reusing ParticleCloud logic but adapted for global state
 function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) {
     const ref = useRef<any>(null);
-    // @ts-ignore
-    const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }));
+
+    // Manual sphere generation to avoid NaN issues from maath
+    const [sphere] = useState(() => {
+        const count = 5000;
+        const radius = 1.5;
+        const points = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const u = Math.random();
+            const v = Math.random();
+            const theta = 2 * Math.PI * u;
+            const phi = Math.acos(2 * v - 1);
+            const r = Math.cbrt(Math.random()) * radius;
+            const sinPhi = Math.sin(phi);
+            points[i * 3] = r * sinPhi * Math.cos(theta);
+            points[i * 3 + 1] = r * sinPhi * Math.sin(theta);
+            points[i * 3 + 2] = r * Math.cos(phi);
+        }
+        return points;
+    });
 
     useFrame((_state, delta) => {
         if (ref.current) {
