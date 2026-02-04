@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 class PatientRequest(BaseModel):
     gender: str
@@ -22,7 +22,7 @@ class ExplanationResponse(BaseModel):
 
 class ReportResponse(BaseModel):
     report: str
-    pdf_url: str = None
+    pdf_url: Optional[str] = None
 
 class SimulationRequest(BaseModel):
     patient: PatientRequest
