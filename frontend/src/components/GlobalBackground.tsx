@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
+import { Points, PointMaterial, Stars } from '@react-three/drei';
 // @ts-ignore
 import * as random from 'maath/random/dist/maath-random.esm';
 // @ts-ignore
@@ -12,7 +12,7 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
 
     // Manual sphere generation to avoid NaN issues from maath
     const [sphere] = useState(() => {
-        const count = 200; // Minimalist count to ensure stability on all devices
+        const count = 1500; // Restored to a richer count (was 200, originally ~5000)
         const radius = 1.5;
         const points = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
@@ -42,7 +42,7 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
                 <PointMaterial
                     transparent
                     color={color}
-                    size={0.005}
+                    size={0.005} // Slightly smaller for elegance with higher count
                     sizeAttenuation={true}
                     depthWrite={false}
                 />
@@ -97,6 +97,15 @@ export default function GlobalBackground({ mode = 'story' }: { mode?: 'story' | 
             >
                 <ambientLight intensity={0.5} />
                 <ParticleCloud color={currentColor} speed={1} />
+                <Stars
+                    radius={100}
+                    depth={50}
+                    count={3000} // Restored stars
+                    factor={4}
+                    saturation={0}
+                    fade
+                    speed={1}
+                />
                 <CameraController mode={mode} />
             </Canvas>
 
