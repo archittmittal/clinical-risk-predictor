@@ -12,7 +12,7 @@ function ParticleCloud({ color, speed = 1 }: { color: string; speed?: number }) 
 
     // Manual sphere generation to avoid NaN issues from maath
     const [sphere] = useState(() => {
-        const count = 5000;
+        const count = 1500; // Reduced from 5000 to prevent WebGL Context Lost
         const radius = 1.5;
         const points = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
@@ -104,7 +104,7 @@ export default function GlobalBackground({ mode, slideIndex }: GlobalBackgroundP
             </Canvas>
 
             {/* Noise Overlay */}
-            <div className="absolute inset-0 z-[1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+            <div className="absolute inset-0 z-[1] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNTAnIGhlaWdodD0nMjUwJz48ZmlsdGVyIGlkPSdub2lzZSc+PGZlVHVyYnVsZW5jZSB0eXBlPSdmcmFjdGFsTm9pc2UnIGJhc2VGcmVxdWVuY3k9JzAuNjUnIG51bXZvY3RhdmVzPSczJyBzdGl0Y2hUaWxlcz0nc3RpdGNoJy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzEwMCUnIGhlaWdodD0nMTAwJScgZmlsdGVyPSd1cmwoI25vaXNlKScgb3BhY2l0eT0nMC4wNScvPjwvc3ZnPg==')] opacity-30 pointer-events-none mix-blend-overlay"></div>
         </div>
     );
 }

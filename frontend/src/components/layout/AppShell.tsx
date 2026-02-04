@@ -22,8 +22,9 @@ const AppShell: React.FC<AppShellProps> = ({ children, user, onLogout, currentVi
     };
 
     const uiClickSound = new Howl({
-        src: ['https://actions.google.com/sounds/v1/ui/click_on_2.ogg'],
-        volume: 0.15
+        src: ['https://raw.githubusercontent.com/arnofaure/free-sfx/main/SciFi/SciFi_UI_Click_High.wav'],
+        volume: 0.15,
+        html5: true
     });
 
     const playClick = () => {
