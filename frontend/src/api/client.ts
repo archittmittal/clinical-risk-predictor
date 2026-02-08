@@ -85,7 +85,11 @@ export const generateReport = async (patient: PredictionInput): Promise<ReportRe
 };
 
 export const streamReport = async (
-    patient: PredictionInput,
+    patient: PredictionInput & {
+        risk_score?: number;
+        risk_level?: string;
+        explanations?: Array<{ feature: string; impact_score: number; impact_description: string; }>;
+    },
     onChunk: (text: string) => void,
     onRisk: (data: { risk_score: number; risk_level: string }) => void,
     onPdf: (url: string) => void

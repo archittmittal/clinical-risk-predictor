@@ -14,6 +14,11 @@ class PatientRequest(BaseModel):
     clinician_name: str = None
     patient_name: str = None
 
+class ReportGenerationRequest(PatientRequest):
+    risk_score: Optional[float] = None
+    risk_level: Optional[str] = None
+    explanations: Optional[List[Dict[str, Any]]] = None
+
 class RiskResponse(BaseModel):
     risk_score: float
     risk_level: str

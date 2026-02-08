@@ -29,7 +29,14 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
         try {
             // Using streaming API
             await streamReport(
-                { ...patientInput, patient_name: user?.name || "Patient" },
+                {
+                    ...patientInput,
+                    patient_name: user?.name || "Patient",
+                    // Pass pre-calculated data to skip backend recalculation (faster!)
+                    risk_score: prediction.risk_score,
+                    risk_level: prediction.risk_level,
+                    explanations: prediction.explanations
+                },
                 (chunk: string) => {
                     setLoadingReport(false); // Stop loading spinner as soon as first chunk arrives
                     setReport(prev => (prev || "") + chunk);

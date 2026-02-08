@@ -16,7 +16,8 @@ from backend.models.history_engine import HistoryEngine
 # Import Schemas
 from backend.schemas.patient import (
     PatientRequest, RiskResponse, ExplanationResponse, 
-    ReportResponse, SimulationRequest, SimulationResponse
+    ReportResponse, SimulationRequest, SimulationResponse,
+    ReportGenerationRequest
 )
 
 # Import Routes
@@ -245,16 +246,27 @@ from fastapi.responses import StreamingResponse
 import json
 
 @app.post("/report/stream")
-def generate_report_stream(patient: PatientRequest):
+def generate_report_stream(patient: ReportGenerationRequest):
     data = patient.dict()
+    # Extract optional pre-calculated data
+    pre_score = data.pop('risk_score', None)
+    pre_level = data.pop('risk_level', None)
+    pre_explanations = data.pop('explanations', None)
+
     # Remove metadata
     data.pop('clinician_id', None)
     data.pop('clinician_name', None)
     patient_name = data.pop('patient_name', None)
 
-    score = risk_engine.predict_risk(data)
-    level = get_risk_level(score)
-    explanations = risk_engine.explain_risk(data)
+    # Use pre-calculated data if available, otherwise calculate
+    if pre_score is not None and pre_explanations is not None:
+        score = pre_score
+        level = pre_level if pre_level else get_risk_level(score)
+        explanations = pre_explanations
+    else:
+        score = risk_engine.predict_risk(data)
+        level = get_risk_level(score)
+        explanations = risk_engine.explain_risk(data)
 
     def event_generator():
         # 1. Yield Risk Data first (fast)
