@@ -4,7 +4,7 @@ import ShapExplainer from './ShapExplainer';
 import SimulationDashboard from './SimulationDashboard';
 import CohortCard from './CohortCard';
 import TrendAnalysis from './TrendAnalysis';
-import { type PredictionResponse, type PredictionInput, generateReport, submitFeedback, getFHIRBundle } from '../api/client';
+import { type PredictionResponse, type PredictionInput, streamReport, submitFeedback, getFHIRBundle } from '../api/client';
 import { FileText, Cpu, Loader2, Download, Code, CheckCircle, XCircle, Share2, AlertTriangle, ShieldCheck } from 'lucide-react';
 import SectionCard from './ui/SectionCard';
 
@@ -30,14 +30,14 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
             // Using streaming API
             await streamReport(
                 { ...patientInput, patient_name: user?.name || "Patient" },
-                (chunk) => {
+                (chunk: string) => {
                     setLoadingReport(false); // Stop loading spinner as soon as first chunk arrives
                     setReport(prev => (prev || "") + chunk);
                 },
-                (riskData) => {
+                (riskData: { risk_score: number; risk_level: string }) => {
                     // Optional: Update risk score if it was recalculated, but we usually have it from prediction
                 },
-                (url) => {
+                (url: string) => {
                     const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
                     setPdfUrl(`${baseUrl}${url}`);
                 }
