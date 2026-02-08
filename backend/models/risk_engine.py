@@ -74,6 +74,16 @@ class RiskEngine:
                                         bins=[0, 18.5, 25, 30, 100],
                                         labels=['Underweight', 'Normal', 'Overweight', 'Obese'])
         
+        # Ensure columns match background data (if available) to prevent shape mismatch (13 vs 12)
+        if self.feature_columns:
+            # Add missing columns with 0/default
+            for col in self.feature_columns:
+                if col not in df.columns:
+                    df[col] = 0
+            
+            # Select and reorder columns to match exactly
+            df = df[self.feature_columns]
+            
         return df
 
     def _predict_for_shap(self, data):

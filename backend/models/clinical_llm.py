@@ -68,6 +68,17 @@ class ClinicalLLM:
             print("✅ Clinical Model loaded successfully.")
         except Exception as e:
             print(f"❌ Failed to load model execution: {e}")
+            if "Unsupported file format" in str(e) or "failed to open" in str(e):
+                print("⚠️ Model file might be corrupt or incompatible. Deleting and retrying...")
+                try:
+                    os.remove(self.model_path)
+                    print("✅ Corrupt model file deleted. Please restart the application to re-download.")
+                    # Optionally, could call _load_model() recursively, but safer to let orchestration handle restart
+                    # or just return None and let next request try?
+                    # Let's try to clear it so next init tries download
+                except Exception as del_e:
+                    print(f"❌ Failed to delete corrupt file: {del_e}")
+            
             self.model = None
 
     def stream_report(self, patient_data: Dict[str, Any], risk_score: float, risk_level: str, explanations: list):
