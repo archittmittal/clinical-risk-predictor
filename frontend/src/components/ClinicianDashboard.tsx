@@ -12,13 +12,13 @@ interface ClinicianDashboardProps {
     prediction: PredictionResponse;
     patientInput: PredictionInput;
     onReset: () => void;
+    user: { name: string; email: string };
 }
 
-const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, patientInput }) => {
+const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, patientInput, user }) => {
     const [report, setReport] = useState<string | null>(null);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [loadingReport, setLoadingReport] = useState(false);
-    const [patientName, setPatientName] = useState("");
     const [feedbackStatus, setFeedbackStatus] = useState<'idle' | 'submitted'>('idle');
     const [fhirVisible, setFhirVisible] = useState(false);
     const [fhirBundle, setFhirBundle] = useState<any>(null);
@@ -26,7 +26,7 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
     const handleGenerateReport = async () => {
         setLoadingReport(true);
         try {
-            const result = await generateReport({ ...patientInput, patient_name: patientName });
+            const result = await generateReport({ ...patientInput, patient_name: user?.name || "Patient" });
             setReport(result.report);
             if (result.pdf_url) {
                 const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
@@ -178,20 +178,6 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
                             )}
 
                             <div className="mt-auto pt-6 flex flex-col gap-3">
-                                <div className="space-y-1">
-                                    <label htmlFor="patientName" className="text-[10px] uppercase font-bold text-slate-400 tracking-wider ml-1">
-                                        Patient Name (Optional)
-                                    </label>
-                                    <input
-                                        id="patientName"
-                                        type="text"
-                                        value={patientName}
-                                        onChange={(e) => setPatientName(e.target.value)}
-                                        placeholder="Enter patient name for report..."
-                                        className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 transition-all placeholder:text-slate-400"
-                                    />
-                                </div>
-
                                 <button
                                     onClick={handleGenerateReport}
                                     disabled={loadingReport}

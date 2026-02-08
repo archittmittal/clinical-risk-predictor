@@ -8,12 +8,17 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
+    if (!name.trim()) {
+      setError('Name is required');
+      return false;
+    }
     if (!email.trim()) {
       setError('Email is required');
       return false;
@@ -39,9 +44,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
-
-      // Extract name from email for demo
-      const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
 
       onLoginSuccess({ email, name });
     } catch (err) {
@@ -93,6 +95,19 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Full Name</label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => { setName(e.target.value); setError(''); }}
+                  placeholder="Enter your name"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                />
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Email</label>
               <div className="relative group">
