@@ -62,7 +62,7 @@ class ClinicalLLM:
             with contextlib.redirect_stderr(stderr_capture):
                 # Initialize GPT4All model
                 # allow_download=False because we manually downloaded it
-                # Limit threads per worker to avoid CPU thrashing when multiple workers are active
+                # model_path=self.weights_dir tells GPT4All where to look for self.filename
                 self.model = GPT4All(model_name=self.filename, model_path=self.weights_dir, allow_download=False, device='cpu', n_threads=4)
             
             print("✅ Clinical Model loaded successfully.")
