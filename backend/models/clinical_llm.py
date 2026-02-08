@@ -65,7 +65,6 @@ class ClinicalLLM:
                 # model_path=self.weights_dir tells GPT4All where to look for self.filename
                 # Reduced threads to 2 to match typical container limits and prevent thrashing
                 self.model = GPT4All(model_name=self.filename, model_path=self.weights_dir, allow_download=False, device='cpu', n_threads=2)
-                print(f"✅ Clinical Model loaded successfully with {self.model.model.n_threads()} threads.")
             
             print("✅ Clinical Model loaded successfully.")
         except Exception as e:
