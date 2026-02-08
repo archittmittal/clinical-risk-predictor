@@ -70,12 +70,14 @@ class ClinicalLLM:
             print(f"❌ Failed to load model execution: {e}")
             self.model = None
 
-    def generate_report(self, patient_data: Dict[str, Any], risk_score: float, risk_level: str, explanations: list) -> str:
+    def stream_report(self, patient_data: Dict[str, Any], risk_score: float, risk_level: str, explanations: list):
         """
-        Generates a clinical report for the patient.
+        Streams a clinical report for the patient.
+        Yields tokens as they are generated.
         """
         if not self.model:
-            return "⚠️ Clinical LLM is not active. Report cannot be generated."
+            yield "⚠️ Clinical LLM is not active. Report cannot be generated."
+            return
 
         # 1. Prepare Features Text
         key_factors = []
@@ -125,14 +127,21 @@ Provide 3-4 specific, actionable steps based on standard clinical guidelines (AD
 ### Response:
 """
 
-        # 3. Generate
+        # 3. Generate (Streaming)
         try:
-            # GPT4All generate method
-            # Increased tokens to 500 for descriptive report, Temp 0.2 for creativity balance
-            output = self.model.generate(prompt, max_tokens=500, temp=0.2)
-            return output.strip()
+            # GPT4All generate method with streaming=True returns a generator
+            for token in self.model.generate(prompt, max_tokens=400, temp=0.2, streaming=True):
+                yield token
         except Exception as e:
-            return f"Error during generation: {e}"
+            yield f"Error during generation: {e}"
+
+    def generate_report(self, patient_data: Dict[str, Any], risk_score: float, risk_level: str, explanations: list) -> str:
+        """
+        Generates a clinical report for the patient (Non-streaming).
+        """
+        # Reuse stream_report logic for DRY if possible, but keep separate for safety for now
+        # Actually, let's just use non-streaming for now as fallback
+        return "".join(list(self.stream_report(patient_data, risk_score, risk_level, explanations)))
 
     def generate_simulation_report(self, original_data: Dict[str, Any], modified_data: Dict[str, Any], original_risk: float, new_risk: float) -> str:
         """

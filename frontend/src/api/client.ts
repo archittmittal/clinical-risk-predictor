@@ -84,6 +84,62 @@ export const generateReport = async (patient: PredictionInput): Promise<ReportRe
     return response.data;
 };
 
+export const streamReport = async (
+    patient: PredictionInput,
+    onChunk: (text: string) => void,
+    onRisk: (data: { risk_score: number; risk_level: string }) => void,
+    onPdf: (url: string) => void
+): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/report/stream`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(patient),
+    });
+
+    if (!response.body) return;
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const blocks = buffer.split('\n\n');
+        buffer = blocks.pop() || '';
+
+        for (const block of blocks) {
+            const lines = block.split('\n');
+            let eventType = 'message';
+            let data = '';
+
+            for (const line of lines) {
+                if (line.startsWith('event: ')) {
+                    eventType = line.replace('event: ', '').trim();
+                } else if (line.startsWith('data: ')) {
+                    data = line.replace('data: ', '');
+                }
+            }
+
+            if (!data) continue;
+
+            if (eventType === 'risk') {
+                onRisk(JSON.parse(data));
+            } else if (eventType === 'pdf') {
+                onPdf(JSON.parse(data).pdf_url);
+            } else if (eventType === 'done') {
+                // Stream finished
+            } else {
+                onChunk(data);
+            }
+        }
+    }
+};
+
 export const generateSimulationReport = async (
     patient: PredictionInput,
     modifications: Record<string, any>

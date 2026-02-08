@@ -25,13 +25,23 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
 
     const handleGenerateReport = async () => {
         setLoadingReport(true);
+        setReport(""); // Clear previous report
         try {
-            const result = await generateReport({ ...patientInput, patient_name: user?.name || "Patient" });
-            setReport(result.report);
-            if (result.pdf_url) {
-                const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
-                setPdfUrl(`${baseUrl}${result.pdf_url}`); // Ensure base URL is correct for dev
-            }
+            // Using streaming API
+            await streamReport(
+                { ...patientInput, patient_name: user?.name || "Patient" },
+                (chunk) => {
+                    setLoadingReport(false); // Stop loading spinner as soon as first chunk arrives
+                    setReport(prev => (prev || "") + chunk);
+                },
+                (riskData) => {
+                    // Optional: Update risk score if it was recalculated, but we usually have it from prediction
+                },
+                (url) => {
+                    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+                    setPdfUrl(`${baseUrl}${url}`);
+                }
+            );
         } catch (error) {
             console.error("Failed to generate report:", error);
             setReport("Error: Could not generate report.");

@@ -241,6 +241,55 @@ def generate_report(patient: PatientRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from fastapi.responses import StreamingResponse
+import json
+
+@app.post("/report/stream")
+def generate_report_stream(patient: PatientRequest):
+    data = patient.dict()
+    # Remove metadata
+    data.pop('clinician_id', None)
+    data.pop('clinician_name', None)
+    patient_name = data.pop('patient_name', None)
+
+    score = risk_engine.predict_risk(data)
+    level = get_risk_level(score)
+    explanations = risk_engine.explain_risk(data)
+
+    def event_generator():
+        # 1. Yield Risk Data first (fast)
+        yield f"event: risk\ndata: {json.dumps({'risk_score': score, 'risk_level': level})}\n\n"
+        
+        full_report = ""
+        
+        # 2. Yield LLM tokens
+        if clinical_llm is None or clinical_llm.model is None:
+            mock_text = f"Using Mock AI (LLM Offline). Patient is {level} Risk with score {score:.2f}."
+            for word in mock_text.split():
+                yield f"data: {word} \n\n"
+                full_report += word + " "
+        else:
+            for token in clinical_llm.stream_report(data, score, level, explanations):
+                yield f"data: {token}\n\n"
+                full_report += token
+        
+        # 3. Generate PDF in background
+        pdf_url = None
+        if pdf_service:
+            try:
+                pdf_filename = pdf_service.generate_report(data, score, level, full_report, explanations, patient_name=patient_name)
+                pdf_url = f"/pdfs/{pdf_filename}"
+            except Exception as e:
+                print(f"Error generating PDF: {e}")
+        
+        # 4. Yield Final PDF URL
+        if pdf_url:
+            yield f"event: pdf\ndata: {json.dumps({'pdf_url': pdf_url})}\n\n"
+            
+        yield "event: done\ndata: [DONE]\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
