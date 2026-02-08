@@ -44,6 +44,8 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
                 (riskData: { risk_score: number; risk_level: string }) => {
                     // Optional: Update risk score if it was recalculated.
                     console.debug("Streamed risk data:", riskData);
+                    // UX: Show immediate feedback to user so they know it's working
+                    setReport(prev => prev || "AI is analyzing clinical patterns...");
                 },
                 (url: string) => {
                     const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
