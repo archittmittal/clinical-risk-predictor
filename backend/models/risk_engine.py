@@ -27,6 +27,12 @@ class RiskEngine:
                 # Store columns for reconstruction
                 self.feature_columns = self.background_data.columns.tolist()
                 
+                # Optimize: Use a sample of background data for faster inference
+                # 50 samples (default) -> 10 samples = ~5x speedup
+                if len(self.background_data) > 10:
+                    print(f"Sampling background data from {len(self.background_data)} to 10...")
+                    self.background_data = shap.utils.sample(self.background_data, 10)
+
                 # Initialize SHAP KernelExplainer
                 print("Initializing SHAP explainer...")
                 self.explainer = shap.KernelExplainer(
@@ -110,7 +116,11 @@ class RiskEngine:
         df = self._preprocess(patient_data)
         
         # SHAP values for binary classification (nsamples, nfeatures)
-        shap_values = self.explainer.shap_values(df)
+        try:
+            shap_values = self.explainer.shap_values(df)
+        except Exception as e:
+            print(f"❌ SHAP generation failed: {e}")
+            return []
         
         # Handle different SHAP output formats
         if isinstance(shap_values, list):
