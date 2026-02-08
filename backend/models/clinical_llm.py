@@ -9,7 +9,7 @@ except ImportError:
     hf_hub_download = None
 
 class ClinicalLLM:
-    def __init__(self, model_repo="MaziyarPanahi/BioMistral-7B-GGUF", model_file="BioMistral-7B.Q4_K_M.gguf"):
+    def __init__(self, model_repo="MaziyarPanahi/BioMistral-7B-GGUF", model_file="BioMistral-7B.Q4_K_S.gguf"):
         """
         Initialize the Clinical LLM model using GPT4All.
         Automatically downloads the GGUF model if not present locally.
