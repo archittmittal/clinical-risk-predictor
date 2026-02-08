@@ -12,6 +12,7 @@ class PatientRequest(BaseModel):
     blood_glucose_level: float
     clinician_id: str = None
     clinician_name: str = None
+    patient_name: str = None
 
 class RiskResponse(BaseModel):
     risk_score: float

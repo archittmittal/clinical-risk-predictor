@@ -121,7 +121,7 @@ class PDFService:
         self.output_dir = os.path.join(os.getcwd(), output_dir)
         os.makedirs(self.output_dir, exist_ok=True)
 
-    def generate_report(self, patient_data: dict, risk_score: float, risk_level: str, llm_summary: str, explanations: list = []) -> str:
+    def generate_report(self, patient_data: dict, risk_score: float, risk_level: str, llm_summary: str, explanations: list = [], patient_name: str = None) -> str:
         pdf = ProfessionalPDF()
         pdf.add_page()
         
@@ -140,7 +140,10 @@ class PDFService:
             
             return label, str(value), is_abnormal
 
+        display_name = patient_name if patient_name else "N/A"
+
         items_col1 = [
+            fmt_item("Patient Name", display_name, 'name'),
             fmt_item("Age", f"{patient_data.get('age')} years", 'age'),
             fmt_item("BMI", f"{patient_data.get('bmi')} kg/m2", 'bmi'),
             fmt_item("Blood Glucose", f"{patient_data.get('blood_glucose_level')} mg/dL", 'blood_glucose_level'),

@@ -199,6 +199,8 @@ def generate_report(patient: PatientRequest):
         data.pop('clinician_id', None)
         data.pop('clinician_name', None)
 
+        patient_name = data.pop('patient_name', None)
+
         score = risk_engine.predict_risk(data)
         level = get_risk_level(score)
         explanations = risk_engine.explain_risk(data)
@@ -229,7 +231,7 @@ def generate_report(patient: PatientRequest):
         if pdf_service:
             try:
                 # Generate PDF
-                pdf_filename = pdf_service.generate_report(data, score, level, report, explanations)
+                pdf_filename = pdf_service.generate_report(data, score, level, report, explanations, patient_name=patient_name)
                 # Helper to get base URL? For now relative
                 pdf_url = f"/pdfs/{pdf_filename}"
             except Exception as pdf_e:

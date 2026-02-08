@@ -20,6 +20,7 @@ export interface PredictionInput {
     blood_glucose_level: number;
     clinician_id?: string;
     clinician_name?: string;
+    patient_name?: string;
 }
 
 export interface PredictionResponse {
