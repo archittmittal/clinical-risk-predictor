@@ -185,8 +185,8 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
                                     <span className="text-xs font-medium uppercase tracking-widest text-center px-4">Please wait. Summary and PDF report are being generated...</span>
                                 </div>
                             ) : report ? (
-                                <div className="bg-slate-50/50 dark:bg-slate-900/30 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 text-sm leading-7 text-slate-700 dark:text-slate-300 font-medium overflow-y-auto max-h-[300px] shadow-inner custom-scrollbar">
-                                    {report}
+                                <div className="bg-slate-50/50 dark:bg-slate-900/30 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 text-sm leading-7 text-slate-700 dark:text-slate-300 font-medium overflow-y-auto max-h-[300px] shadow-inner custom-scrollbar prose dark:prose-invert max-w-none">
+                                    <ReactMarkdown>{report}</ReactMarkdown>
                                 </div>
                             ) : (
                                 <div className="flex-grow flex flex-col justify-center items-center text-center p-6 text-slate-400">
