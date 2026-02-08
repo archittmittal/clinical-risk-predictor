@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import RiskGauge from './RiskGauge';
 import ShapExplainer from './ShapExplainer';
 import SimulationDashboard from './SimulationDashboard';
