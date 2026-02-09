@@ -14,7 +14,6 @@ fpdf
 lightgbm
 catboost
 imbalanced-learn
-locust
 gunicorn
 sqlalchemy
 passlib[bcrypt]
