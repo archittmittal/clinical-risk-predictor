@@ -16,3 +16,8 @@ catboost
 imbalanced-learn
 locust
 gunicorn
+sqlalchemy
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+google-auth
