@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Activity } from 'lucide-react';
 
-import { login } from '../api/client';
+import { login, loginWithGoogle } from '../api/client';
+import { GoogleLogin } from '@react-oauth/google';
 
 interface LoginProps {
   onLoginSuccess: (user: { email: string; name: string }) => void;
@@ -186,6 +187,35 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
             <div className="relative flex justify-center">
               <span className="bg-clinical-bg dark:bg-clinical-bg-dark px-4 text-xs font-medium text-slate-400 uppercase tracking-widest">Or continue with</span>
             </div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                if (credentialResponse.credential) {
+                  setLoading(true);
+                  try {
+                    const response = await loginWithGoogle(credentialResponse.credential);
+                    onLoginSuccess({
+                      email: response.user_email,
+                      name: response.user_name
+                    });
+                  } catch (err: any) {
+                    console.error("Google Login Error", err);
+                    setError("Google Sign-In Failed");
+                  } finally {
+                    setLoading(false);
+                  }
+                }
+              }}
+              onError={() => {
+                setError('Google Sign-In Failed');
+              }}
+              useOneTap
+              theme="filled_blue"
+              shape="pill"
+              width="300"
+            />
           </div>
 
           <p className="text-center text-slate-600 dark:text-slate-400">

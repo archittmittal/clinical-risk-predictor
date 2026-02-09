@@ -4,6 +4,10 @@ import './index.css'
 import App from './App.tsx'
 import ErrorBoundary from './components/ErrorBoundary'
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"; // Replace with your actual Client ID
+
 try {
   const root = document.getElementById('root');
   if (!root) throw new Error('Root not found');
@@ -11,7 +15,9 @@ try {
   createRoot(root).render(
     <StrictMode>
       <ErrorBoundary>
-        <App />
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <App />
+        </GoogleOAuthProvider>
       </ErrorBoundary>
     </StrictMode>,
   )
