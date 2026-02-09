@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import TrendAnalysis from '../TrendAnalysis';
 import CohortCard from '../CohortCard';
 import SectionCard from '../ui/SectionCard';
-import { type PredictionResponse, type PredictionInput, generateReport, getFHIRBundle } from '../../api/client';
+import { type PredictionResponse, type PredictionInput, streamReport, getFHIRBundle } from '../../api/client';
 import { FileText, Cpu, Loader2, Download, Code, Share2, XCircle } from 'lucide-react';
 
 interface AnalysisRailProps {
@@ -17,19 +17,40 @@ const AnalysisRail: React.FC<AnalysisRailProps> = ({ prediction: _prediction, pa
     const [fhirVisible, setFhirVisible] = useState(false);
     const [fhirBundle, setFhirBundle] = useState<any>(null);
 
+    // Auto-generate report when prediction is available
+    React.useEffect(() => {
+        if (_prediction) {
+            handleGenerateReport();
+        }
+    }, [_prediction]);
+
     const handleGenerateReport = async () => {
         setLoadingReport(true);
+        setReport("");
         try {
-            const result = await generateReport(patientInput);
-            setReport(result.report);
-            if (result.pdf_url) {
-                const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
-                setPdfUrl(`${baseUrl}${result.pdf_url}`);
-            }
+            await streamReport(
+                {
+                    ...patientInput,
+                    // Pass pre-calculated data
+                    risk_score: _prediction.risk_score,
+                    risk_level: _prediction.risk_level,
+                    explanations: _prediction.explanations
+                },
+                (chunk: string) => {
+                    setLoadingReport(false);
+                    setReport(prev => (prev || "") + chunk);
+                },
+                (_riskData: { risk_score: number; risk_level: string }) => {
+                    // Update risk data if needed
+                },
+                (url: string) => {
+                    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+                    setPdfUrl(`${baseUrl}${url}`);
+                }
+            );
         } catch (error) {
             console.error("Failed to generate report:", error);
             setReport("Error: Could not generate report.");
-        } finally {
             setLoadingReport(false);
         }
     };

@@ -24,6 +24,13 @@ const ClinicianDashboard: React.FC<ClinicianDashboardProps> = ({ prediction, pat
     const [fhirVisible, setFhirVisible] = useState(false);
     const [fhirBundle, setFhirBundle] = useState<any>(null);
 
+    // Auto-generate report when prediction is available
+    React.useEffect(() => {
+        if (prediction) {
+            handleGenerateReport();
+        }
+    }, [prediction]);
+
     const handleGenerateReport = async () => {
         setLoadingReport(true);
         setReport(""); // Clear previous report
