@@ -6,7 +6,11 @@ import ErrorBoundary from './components/ErrorBoundary'
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"; // Replace with your actual Client ID
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID_placeholder";
+console.log("Current Google Client ID:", GOOGLE_CLIENT_ID);
+if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
+  console.warn("WARNING: VITE_GOOGLE_CLIENT_ID is not set in environment variables!");
+}
 
 try {
   const root = document.getElementById('root');
