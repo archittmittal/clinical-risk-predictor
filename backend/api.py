@@ -1,14 +1,12 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any
 import sys
 import os
-from sqlalchemy.orm import Session
 
 # Ensure backend module can be imported
 sys.path.append(os.getcwd())
 
-from backend.database import engine, Base, get_db
 from backend.models.risk_engine import RiskEngine
 from backend.models.counterfactuals import Counterfactuals
 from backend.models.clinical_llm import ClinicalLLM
@@ -20,20 +18,12 @@ from backend.schemas.patient import (
     ReportResponse, SimulationRequest, SimulationResponse,
     ReportGenerationRequest
 )
-from backend.models.user import User as UserModel
-from backend.auth import get_current_user
 
 # Import Routes
-from backend.routes import cohort, feedback, fhir, auth, auth_google
+from backend.routes import cohort, feedback, fhir
 
 from fastapi.staticfiles import StaticFiles
 from backend.models.pdf_service import PDFService
-
-# 1. Initialize App & Database
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print(f"Database Error (Migration needed?): {e}")
 
 app = FastAPI(title="Clinical Risk Predictor API", version="2.0")
 
@@ -43,8 +33,6 @@ os.makedirs(pdf_dir, exist_ok=True)
 app.mount("/pdfs", StaticFiles(directory=pdf_dir), name="pdfs")
 
 # Include Routers
-app.include_router(auth.router)
-app.include_router(auth_google.router)
 app.include_router(cohort.router)
 app.include_router(feedback.router)
 app.include_router(fhir.router)

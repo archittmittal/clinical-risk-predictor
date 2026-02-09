@@ -1,63 +1,76 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
-from backend.models.history import RiskAssessment
+import json
+import os
 import numpy as np
+from datetime import datetime
 
 class HistoryService:
+    HISTORY_FILE = os.path.join("data", "history.json")
+    
     @staticmethod
-    def save_record(db: Session, user_id: int, patient_data: dict, risk_score: float, risk_level: str):
-        record = RiskAssessment(
-            user_id=user_id,
-            patient_data=patient_data,
-            risk_score=risk_score,
-            risk_level=risk_level
-        )
-        db.add(record)
-        db.commit()
-        db.refresh(record)
+    def _load_db():
+        if not os.path.exists(HistoryService.HISTORY_FILE):
+            return []
+        try:
+            with open(HistoryService.HISTORY_FILE, "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return []
+
+    @staticmethod
+    def _save_db(data):
+        os.makedirs(os.path.dirname(HistoryService.HISTORY_FILE), exist_ok=True)
+        with open(HistoryService.HISTORY_FILE, "w") as f:
+            json.dump(data, f, indent=4)
+
+    @staticmethod
+    def save_record(patient_data: dict, risk_score: float, risk_level: str):
+        history = HistoryService._load_db()
+        
+        record = {
+            "id": len(history) + 1,
+            "timestamp": datetime.now().isoformat(),
+            "patient_data": patient_data,
+            "risk_assessment": {
+                "score": risk_score,
+                "level": risk_level
+            }
+        }
+        
+        history.append(record)
+        HistoryService._save_db(history)
         return record
 
     @staticmethod
-    def get_history(db: Session, user_id: int, limit: int = 10):
-        # Fetch records for the specific user
-        records = db.query(RiskAssessment)\
-            .filter(RiskAssessment.user_id == user_id)\
-            .order_by(desc(RiskAssessment.timestamp))\
-            .limit(limit)\
-            .all()
-        
-        # Convert to format expected by frontend
-        history_list = []
-        for r in records:
-            history_list.append({
-                "timestamp": r.timestamp.isoformat(),
-                "patient_data": r.patient_data,
-                "risk_assessment": {
-                    "score": r.risk_score,
-                    "level": r.risk_level
-                },
-                "clinician": {
-                    "id": str(r.user_id),
-                    "name": r.user.name if r.user else "Unknown"
-                }
-            })
+    def get_history(limit: int = 10):
+        try:
+            full_history = HistoryService._load_db()
+            # Sort by timestamp desc
+            full_history.sort(key=lambda x: x['timestamp'], reverse=True)
             
-        velocity, alert = HistoryService.calculate_risk_velocity(history_list)
-        
-        return {
-            "history": history_list,
-            "trend_analysis": {
-                "velocity": velocity,
-                "status": alert
+            # Limit
+            history_list = full_history[:limit]
+            
+            # Determine Trend
+            velocity, alert = HistoryService.calculate_risk_velocity(history_list)
+            
+            return {
+                "history": history_list,
+                "trend_analysis": {
+                    "velocity": velocity,
+                    "status": alert
+                }
             }
-        }
+                
+        except Exception as e:
+            print(f"Error fetching history: {e}")
+            return {"history": [], "trend_analysis": {"velocity": 0, "status": "Error"}}
 
     @staticmethod
     def calculate_risk_velocity(history: list) -> tuple:
         if len(history) < 2:
             return 0.0, "Insufficient Data"
         
-        # Get last 5 data points (they are already sorted new->old, so reverse them for calc)
+        # Get last 5 data points (they are sorted new->old, so reverse them for calc)
         data_points = history[:5][::-1]
         scores = [r['risk_assessment']['score'] for r in data_points]
         x = range(len(scores))

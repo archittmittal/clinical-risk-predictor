@@ -15,8 +15,4 @@ lightgbm
 catboost
 imbalanced-learn
 gunicorn
-sqlalchemy
-passlib[bcrypt]
-python-jose[cryptography]
-python-multipart
-google-auth
+

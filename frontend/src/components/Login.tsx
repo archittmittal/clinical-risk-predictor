@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Activity } from 'lucide-react';
 
-import { login, loginWithGoogle } from '../api/client';
-import { GoogleLogin } from '@react-oauth/google';
-
 interface LoginProps {
   onLoginSuccess: (user: { email: string; name: string }) => void;
   onSwitchToSignup: () => void;
@@ -11,52 +8,43 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const validateForm = () => {
-    if (!name.trim()) {
-      setError('Name is required');
-      return false;
-    }
-    if (!email.trim()) {
-      setError('Email is required');
-      return false;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Please enter a valid email address');
-      return false;
-    }
-    if (!password) {
-      setError('Password is required');
-      return false;
-    }
-    return true;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!validateForm()) return;
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
 
     setLoading(true);
-    try {
-      const response = await login(email, password);
-      onLoginSuccess({
-        email: response.user_email,
-        name: response.user_name
-      });
-    } catch (err: any) {
-      console.error("Login Error", err);
-      const msg = err.response?.data?.detail || 'Login failed. Please check your credentials.';
-      setError(msg);
-    } finally {
+
+    // Simulate API call
+    setTimeout(() => {
+      // Simple mock validation
+      if (password.length < 4) {
+        setError("Password must be at least 4 characters");
+        setLoading(false);
+        return;
+      }
+
+      const mockUser = {
+        email: email,
+        name: email.split('@')[0] || "Clinician"
+      };
+
+      // Store auth state locally
+      localStorage.setItem('authToken', 'mock-jwt-token-12345');
+      localStorage.setItem('user', JSON.stringify(mockUser));
+
+      onLoginSuccess(mockUser);
       setLoading(false);
-    }
+    }, 800);
   };
 
   return (
@@ -85,7 +73,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
 
         {/* Footer info */}
         <div className="absolute bottom-8 text-slate-500 text-xs flex gap-6">
-          <span>v2.4.0 (BioMistral-7B)</span>
+          <span>v2.5.0 (BioMistral-7B)</span>
           <span>HIPAA Compliant</span>
           <span>256-bit Encryption</span>
         </div>
@@ -100,133 +88,77 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
             <p className="text-slate-500 dark:text-slate-400">Sign in to access your dashboard</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Full Name</label>
-              <div className="relative group">
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => { setName(e.target.value); setError(''); }}
-                  placeholder="Enter your name"
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Email</label>
-              <div className="relative group">
-                <Mail className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 text-slate-400" size={18} />
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                  placeholder="doc@hospital.com"
-                  className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal focus:border-transparent transition-all outline-none text-sm placeholder:text-slate-400"
+                  placeholder="doctor@hospital.org"
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Password</label>
-              <div className="relative group">
-                <Lock className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                <a href="#" className="text-xs text-clinical-teal hover:underline">Forgot password?</a>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 text-slate-400" size={18} />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                  placeholder="Enter password"
-                  className="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-10 pr-10 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal focus:border-transparent transition-all outline-none text-sm placeholder:text-slate-400"
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+              <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 text-sm flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
                 {error}
               </div>
             )}
 
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" className="rounded border-slate-300 text-clinical-teal focus:ring-clinical-teal" defaultChecked />
-                <span className="text-slate-600 dark:text-slate-400 group-hover:text-clinical-teal transition-colors">Remember me</span>
-              </label>
-              <a href="#" className="font-semibold text-clinical-teal hover:text-clinical-teal-dark transition-colors">Forgot Password?</a>
-            </div>
-
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-gradient-to-r from-clinical-teal to-clinical-teal-dark hover:from-teal-500 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-clinical-teal/20 transform active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-clinical-teal to-cyan-600 hover:from-clinical-teal-dark hover:to-cyan-700 text-white font-semibold py-2.5 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transform transition-all duration-200 relative overflow-hidden group"
             >
-              {loading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Authenticating...</span>
-                </>
-              ) : (
-                'Sign In'
-              )}
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+              <span className="relative flex items-center justify-center gap-2">
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </span>
             </button>
           </form>
 
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-clinical-bg dark:bg-clinical-bg-dark px-4 text-xs font-medium text-slate-400 uppercase tracking-widest">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="flex justify-center">
-            <GoogleLogin
-              onSuccess={async (credentialResponse) => {
-                if (credentialResponse.credential) {
-                  setLoading(true);
-                  try {
-                    const response = await loginWithGoogle(credentialResponse.credential);
-                    onLoginSuccess({
-                      email: response.user_email,
-                      name: response.user_name
-                    });
-                  } catch (err: any) {
-                    console.error("Google Login Error", err);
-                    setError("Google Sign-In Failed");
-                  } finally {
-                    setLoading(false);
-                  }
-                }
-              }}
-              onError={() => {
-                setError('Google Sign-In Failed');
-              }}
-              useOneTap
-              theme="filled_blue"
-              shape="pill"
-              width="300"
-            />
-          </div>
-
-          <p className="text-center text-slate-600 dark:text-slate-400">
+          <div className="text-center text-sm text-slate-500 font-medium">
             Don't have an account?{' '}
-            <button
-              onClick={onSwitchToSignup}
-              className="font-bold text-clinical-teal hover:underline decoration-2 underline-offset-4"
-            >
-              Create Account
+            <button onClick={onSwitchToSignup} className="text-clinical-teal hover:underline cursor-pointer">
+              Create an account
             </button>
-          </p>
+          </div>
         </div>
       </div>
     </div>
