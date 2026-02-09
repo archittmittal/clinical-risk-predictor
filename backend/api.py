@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any
 import sys
 import os
+import json
 
 # Ensure backend module can be imported
 sys.path.append(os.getcwd())
@@ -24,6 +25,7 @@ from backend.routes import cohort, feedback, fhir
 
 from fastapi.staticfiles import StaticFiles
 from backend.models.pdf_service import PDFService
+from fastapi.responses import StreamingResponse
 
 app = FastAPI(title="Clinical Risk Predictor API", version="2.0")
 
@@ -46,37 +48,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 3. Load Model (Global State)
+# 3. Load Engine Components
 try:
     risk_engine = RiskEngine()
     print("Risk Engine loaded successfully.")
 except Exception as e:
-    print(f"Error loading Risk Engine: {e}")
+    print(f"Failed to load Risk Engine: {e}")
     risk_engine = None
 
-# Initialize Clinical LLM (Embedded)
-try:
-    clinical_llm = ClinicalLLM()
-    print("Clinical LLM initialized.")
-except Exception as e:
-    print(f"Error initializing Clinical LLM: {e}")
-    clinical_llm = None
+clinical_llm = ClinicalLLM()
+pdf_service = PDFService()
 
-# Initialize PDF Service
-try:
-    pdf_service = PDFService()
-    print("PDF Service initialized.")
-except Exception as e:
-    print(f"Error initializing PDF Service: {e}")
-    pdf_service = None
 
-# 5. Helper Functions
-def get_risk_level(score: float) -> str:
-    if score < 0.2: return "Low"
-    if score < 0.6: return "Moderate"
-    return "High"
+# --- Endpoints ---
 
-# 6. Endpoints
 @app.get("/health")
 def health_check():
     if risk_engine is None:
@@ -88,50 +73,42 @@ def root():
     return {"message": "Clinical Risk Predictor API is running", "docs": "/docs"}
 
 @app.post("/predict", response_model=RiskResponse)
-def predict_risk(
-    patient: PatientRequest, 
-    current_user: UserModel = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
+def predict_risk(patient: PatientRequest):
     if risk_engine is None:
         raise HTTPException(status_code=503, detail="Risk Engine not ready")
     
     try:
         data = patient.dict()
-        # Extract metadata (legacy support, but we rely on current_user now)
+        # Remove metadata
         data.pop('clinician_id', None)
         data.pop('clinician_name', None)
+        patient_name = data.pop('patient_name', None)
 
         score = risk_engine.predict_risk(data)
         level = get_risk_level(score)
+        explanations = risk_engine.explain_risk(data)
         
-        # Save to database using HistoryService
+        # Save to JSON History
         try:
             HistoryService.save_record(
-                db=db, 
-                user_id=current_user.id, 
                 patient_data=data, 
                 risk_score=score, 
                 risk_level=level
             )
         except Exception as hist_e:
-            print(f"Warning: Failed to save history to DB: {hist_e}")
+            print(f"Warning: Failed to save history to JSON: {hist_e}")
 
-        return {"risk_score": score, "risk_level": level}
+        return {"risk_score": score, "risk_level": level, "explanations": explanations}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/history")
-def get_history(
-    limit: int = 10, 
-    current_user: UserModel = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    return HistoryService.get_history(db, current_user.id, limit)
+@app.get("/history", response_model=Dict[str, Any])
+def get_history(limit: int = 10):
+    return HistoryService.get_history(limit)
 
 
 @app.post("/explain", response_model=ExplanationResponse)
-def explain_risk(patient: PatientRequest, current_user: UserModel = Depends(get_current_user)):
+def explain_risk(patient: PatientRequest):
     if risk_engine is None:
         raise HTTPException(status_code=503, detail="Risk Engine not ready")
     
@@ -147,7 +124,7 @@ def explain_risk(patient: PatientRequest, current_user: UserModel = Depends(get_
 
 
 @app.post("/simulate", response_model=SimulationResponse)
-def simulate_risk(request: SimulationRequest, current_user: UserModel = Depends(get_current_user)):
+def simulate_risk(request: SimulationRequest):
     if risk_engine is None:
         raise HTTPException(status_code=503, detail="Risk Engine not ready")
     
@@ -167,7 +144,7 @@ def simulate_risk(request: SimulationRequest, current_user: UserModel = Depends(
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/simulate/report", response_model=ReportResponse)
-def generate_simulation_report(request: SimulationRequest, current_user: UserModel = Depends(get_current_user)):
+def generate_simulation_report(request: SimulationRequest):
     try:
         # Calculate Risks
         original_risk = risk_engine.predict_risk(request.patient.dict())
@@ -193,12 +170,11 @@ def generate_simulation_report(request: SimulationRequest, current_user: UserMod
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/report", response_model=ReportResponse)
-def generate_report(patient: PatientRequest, current_user: UserModel = Depends(get_current_user)):
+def generate_report(patient: PatientRequest):
     try:
         data = patient.dict()
         data.pop('clinician_id', None)
         data.pop('clinician_name', None)
-
         patient_name = data.pop('patient_name', None)
 
         score = risk_engine.predict_risk(data)
@@ -238,14 +214,8 @@ def generate_report(patient: PatientRequest, current_user: UserModel = Depends(g
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-from fastapi.responses import StreamingResponse
-import json
-
 @app.post("/report/stream")
-def generate_report_stream(
-    patient: ReportGenerationRequest, 
-    current_user: UserModel = Depends(get_current_user)
-):
+def generate_report_stream(patient: ReportGenerationRequest):
     data = patient.dict()
     # Extract optional pre-calculated data
     pre_score = data.pop('risk_score', None)
@@ -282,7 +252,8 @@ def generate_report_stream(
         else:
             for token in clinical_llm.stream_report(data, score, level, explanations):
                 yield f"data: {token}\n\n"
-                full_report += token
+                if isinstance(token, str):
+                    full_report += token
         
         # 3. Generate PDF in background
         pdf_url = None
@@ -300,6 +271,11 @@ def generate_report_stream(
         yield "event: done\ndata: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+def get_risk_level(score):
+    if score < 0.3: return "Low"
+    if score < 0.7: return "Moderate"
+    return "High"
 
 if __name__ == "__main__":
     import uvicorn
