@@ -16,12 +16,14 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "YOUR_GOOGLE_CLIENT_ID_placehol
 class GoogleAuthRequest(BaseModel):
     credential: str # The JWT returned by Google Sign-In
 
+from typing import Optional
+
 class Token(BaseModel):
     access_token: str
     token_type: str
     user_name: str
     user_email: str
-    user_specialty: str | None = None
+    user_specialty: Optional[str] = None
 
 @router.post("/", response_model=Token)
 def google_login(request: GoogleAuthRequest, db: Session = Depends(get_db)):
