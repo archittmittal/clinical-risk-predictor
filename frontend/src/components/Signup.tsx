@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Building2, Eye, EyeOff, ArrowLeft, ArrowRight } from 'lucide-react';
 
+import { register } from '../api/client';
+
 interface SignupProps {
   onSignupSuccess: (user: { email: string; name: string; specialty: string }) => void;
   onSwitchToLogin: () => void;
@@ -71,14 +73,23 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onSwitchToLogin }) => 
 
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      onSignupSuccess({
+      const response = await register({
         email: formData.email,
+        password: formData.password,
         name: `${formData.firstName} ${formData.lastName}`,
         specialty: formData.specialty,
+        hospital: formData.hospital
       });
-    } catch (err) {
-      setError('Signup failed. Please try again.');
+
+      onSignupSuccess({
+        email: response.user_email,
+        name: response.user_name,
+        specialty: response.user_specialty || '',
+      });
+    } catch (err: any) {
+      console.error("Signup Error", err);
+      const msg = err.response?.data?.detail || 'Signup failed. Please try again.';
+      setError(msg);
     } finally {
       setLoading(false);
     }

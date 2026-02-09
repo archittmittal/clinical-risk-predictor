@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Activity } from 'lucide-react';
 
+import { login } from '../api/client';
+
 interface LoginProps {
   onLoginSuccess: (user: { email: string; name: string }) => void;
   onSwitchToSignup: () => void;
@@ -42,12 +44,15 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onSwitchToSignup }) => {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      onLoginSuccess({ email, name });
-    } catch (err) {
-      setError('Login failed. Please try again.');
+      const response = await login(email, password);
+      onLoginSuccess({
+        email: response.user_email,
+        name: response.user_name
+      });
+    } catch (err: any) {
+      console.error("Login Error", err);
+      const msg = err.response?.data?.detail || 'Login failed. Please check your credentials.';
+      setError(msg);
     } finally {
       setLoading(false);
     }

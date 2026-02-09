@@ -1,17 +1,18 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any
 import sys
 import os
+from sqlalchemy.orm import Session
 
 # Ensure backend module can be imported
 sys.path.append(os.getcwd())
 
+from backend.database import engine, Base, get_db
 from backend.models.risk_engine import RiskEngine
 from backend.models.counterfactuals import Counterfactuals
-# from backend.models.llm_engine import LLMEngine # Deprecated
 from backend.models.clinical_llm import ClinicalLLM
-from backend.models.history_engine import HistoryEngine
+from backend.services.history import HistoryService
 
 # Import Schemas
 from backend.schemas.patient import (
@@ -19,21 +20,27 @@ from backend.schemas.patient import (
     ReportResponse, SimulationRequest, SimulationResponse,
     ReportGenerationRequest
 )
+from backend.models.user import User as UserModel
+from backend.auth import get_current_user
 
 # Import Routes
-from backend.routes import cohort, feedback, fhir
+from backend.routes import cohort, feedback, fhir, auth
 
 from fastapi.staticfiles import StaticFiles
 from backend.models.pdf_service import PDFService
 
-# 1. Initialize App
+# 1. Initialize App & Database
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(title="Clinical Risk Predictor API", version="2.0")
 
 # Mount PDF directory
 pdf_dir = os.path.join(os.getcwd(), "backend", "pdfs")
 os.makedirs(pdf_dir, exist_ok=True)
 app.mount("/pdfs", StaticFiles(directory=pdf_dir), name="pdfs")
+
 # Include Routers
+app.include_router(auth.router)
 app.include_router(cohort.router)
 app.include_router(feedback.router)
 app.include_router(fhir.router)
@@ -57,20 +64,11 @@ except Exception as e:
 
 # Initialize Clinical LLM (Embedded)
 try:
-    # This will trigger the download on first run!
     clinical_llm = ClinicalLLM()
     print("Clinical LLM initialized.")
 except Exception as e:
     print(f"Error initializing Clinical LLM: {e}")
     clinical_llm = None
-
-# Initialize History Engine
-try:
-    history_engine = HistoryEngine()
-    print("History Engine initialized.")
-except Exception as e:
-    print(f"Error initializing History Engine: {e}")
-    history_engine = None
 
 # Initialize PDF Service
 try:
@@ -98,45 +96,55 @@ def root():
     return {"message": "Clinical Risk Predictor API is running", "docs": "/docs"}
 
 @app.post("/predict", response_model=RiskResponse)
-def predict_risk(patient: PatientRequest):
+def predict_risk(
+    patient: PatientRequest, 
+    current_user: UserModel = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     if risk_engine is None:
         raise HTTPException(status_code=503, detail="Risk Engine not ready")
     
     try:
         data = patient.dict()
-        # Extract metadata
-        c_id = data.pop('clinician_id', None)
-        c_name = data.pop('clinician_name', None)
+        # Extract metadata (legacy support, but we rely on current_user now)
+        data.pop('clinician_id', None)
+        data.pop('clinician_name', None)
 
         score = risk_engine.predict_risk(data)
         level = get_risk_level(score)
         
-        # Save to history
-        if history_engine:
-            try:
-                history_engine.save_record(data, score, level, clinician_id=c_id, clinician_name=c_name)
-            except Exception as hist_e:
-                print(f"Warning: Failed to save history: {hist_e}")
+        # Save to database using HistoryService
+        try:
+            HistoryService.save_record(
+                db=db, 
+                user_id=current_user.id, 
+                patient_data=data, 
+                risk_score=score, 
+                risk_level=level
+            )
+        except Exception as hist_e:
+            print(f"Warning: Failed to save history to DB: {hist_e}")
 
         return {"risk_score": score, "risk_level": level}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/history")
-def get_history(limit: int = 10):
-    if history_engine is None:
-        raise HTTPException(status_code=503, detail="History Engine not ready")
-    return history_engine.get_history(limit)
+def get_history(
+    limit: int = 10, 
+    current_user: UserModel = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    return HistoryService.get_history(db, current_user.id, limit)
 
 
 @app.post("/explain", response_model=ExplanationResponse)
-def explain_risk(patient: PatientRequest):
+def explain_risk(patient: PatientRequest, current_user: UserModel = Depends(get_current_user)):
     if risk_engine is None:
         raise HTTPException(status_code=503, detail="Risk Engine not ready")
     
     try:
         data = patient.dict()
-        # Remove metadata if present so it doesn't affect SHAP/Model
         data.pop('clinician_id', None)
         data.pop('clinician_name', None)
         
@@ -147,7 +155,7 @@ def explain_risk(patient: PatientRequest):
 
 
 @app.post("/simulate", response_model=SimulationResponse)
-def simulate_risk(request: SimulationRequest):
+def simulate_risk(request: SimulationRequest, current_user: UserModel = Depends(get_current_user)):
     if risk_engine is None:
         raise HTTPException(status_code=503, detail="Risk Engine not ready")
     
@@ -167,7 +175,7 @@ def simulate_risk(request: SimulationRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/simulate/report", response_model=ReportResponse)
-def generate_simulation_report(request: SimulationRequest):
+def generate_simulation_report(request: SimulationRequest, current_user: UserModel = Depends(get_current_user)):
     try:
         # Calculate Risks
         original_risk = risk_engine.predict_risk(request.patient.dict())
@@ -193,10 +201,9 @@ def generate_simulation_report(request: SimulationRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/report", response_model=ReportResponse)
-def generate_report(patient: PatientRequest):
+def generate_report(patient: PatientRequest, current_user: UserModel = Depends(get_current_user)):
     try:
         data = patient.dict()
-        # Remove metadata
         data.pop('clinician_id', None)
         data.pop('clinician_name', None)
 
@@ -206,7 +213,6 @@ def generate_report(patient: PatientRequest):
         level = get_risk_level(score)
         explanations = risk_engine.explain_risk(data)
         
-        # Fallback to Mock if LLM is down
         if clinical_llm is None or clinical_llm.model is None:
             print("⚠️ Using Mock AI Report due to missing LLM.")
             report = f"""
@@ -231,9 +237,7 @@ def generate_report(patient: PatientRequest):
         
         if pdf_service:
             try:
-                # Generate PDF
                 pdf_filename = pdf_service.generate_report(data, score, level, report, explanations, patient_name=patient_name)
-                # Helper to get base URL? For now relative
                 pdf_url = f"/pdfs/{pdf_filename}"
             except Exception as pdf_e:
                 print(f"Error generating PDF: {pdf_e}")
@@ -246,7 +250,10 @@ from fastapi.responses import StreamingResponse
 import json
 
 @app.post("/report/stream")
-def generate_report_stream(patient: ReportGenerationRequest):
+def generate_report_stream(
+    patient: ReportGenerationRequest, 
+    current_user: UserModel = Depends(get_current_user)
+):
     data = patient.dict()
     # Extract optional pre-calculated data
     pre_score = data.pop('risk_score', None)

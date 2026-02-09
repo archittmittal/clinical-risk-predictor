@@ -9,6 +9,57 @@ export const apiClient = axios.create({
     },
 });
 
+// --- Auth Interceptor ---
+apiClient.interceptors.request.use((config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
+// --- Auth Types & Functions ---
+
+export interface AuthResponse {
+    access_token: string;
+    token_type: string;
+    user_name: string;
+    user_email: string;
+    user_specialty?: string;
+}
+
+export const login = async (email: string, password: string): Promise<AuthResponse> => {
+    // OAuth2PasswordRequestForm expects form data usually, but our backend expects JSON by default unless changed. 
+    // Wait, backend auth.py used `UserLogin` Pydantic model which expects JSON body.
+    const response = await apiClient.post<AuthResponse>('/auth/login', { email, password });
+    if (response.data.access_token) {
+        localStorage.setItem('authToken', response.data.access_token);
+    }
+    return response.data;
+};
+
+export const register = async (userData: {
+    email: string;
+    password: string;
+    name: string;
+    specialty?: string;
+    hospital?: string;
+}): Promise<AuthResponse> => {
+    const response = await apiClient.post<AuthResponse>('/auth/register', userData);
+    if (response.data.access_token) {
+        localStorage.setItem('authToken', response.data.access_token);
+    }
+    return response.data;
+};
+
+export const logout = () => {
+    localStorage.removeItem('authToken');
+};
+
+// --- Existing Types ---
+
 export interface PredictionInput {
     gender: string;
     age: number;
@@ -61,6 +112,7 @@ export interface SimulationResponse {
     original_risk: number;
     new_risk: number;
     risk_reduction: number;
+    modified_data?: Record<string, any>;
 }
 
 export const simulateRisk = async (
@@ -94,10 +146,14 @@ export const streamReport = async (
     onRisk: (data: { risk_score: number; risk_level: string }) => void,
     onPdf: (url: string) => void
 ): Promise<void> => {
+    const token = localStorage.getItem('authToken');
+
+    // We need to use fetch directly for streaming, so we manually add the header
     const response = await fetch(`${API_BASE_URL}/report/stream`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify(patient),
     });
