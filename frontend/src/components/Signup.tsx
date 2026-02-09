@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Building2, Eye, EyeOff, ArrowLeft, ArrowRight } from 'lucide-react';
-
-import { register } from '../api/client';
+import { Mail, Lock, Building2, Eye, EyeOff, ArrowLeft, ArrowRight, User } from 'lucide-react';
 
 interface SignupProps {
   onSignupSuccess: (user: { email: string; name: string; specialty: string }) => void;
@@ -50,8 +48,8 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onSwitchToLogin }) => 
   }
 
   const validateForm = () => {
-    if (!formData.password || formData.password.length < 8) {
-      setError("Password must be at least 8 characters");
+    if (!formData.password || formData.password.length < 4) {
+      setError("Password must be at least 4 characters");
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
@@ -67,60 +65,52 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onSwitchToLogin }) => 
     if (step === 2 && validateStep2()) setStep(3);
   }
 
+  const prevStep = () => {
+    setError('');
+    if (step > 1) setStep(step - 1);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
-    try {
-      const response = await register({
-        email: formData.email,
-        password: formData.password,
-        name: `${formData.firstName} ${formData.lastName}`,
-        specialty: formData.specialty,
-        hospital: formData.hospital
-      });
 
-      onSignupSuccess({
-        email: response.user_email,
-        name: response.user_name,
-        specialty: response.user_specialty || '',
-      });
-    } catch (err: any) {
-      console.error("Signup Error", err);
-      const msg = err.response?.data?.detail || 'Signup failed. Please try again.';
-      setError(msg);
-    } finally {
+    // Simulate API call
+    setTimeout(() => {
+      const mockUser = {
+        email: formData.email,
+        name: `${formData.firstName} ${formData.lastName}`,
+        specialty: formData.specialty
+      };
+
+      // Store auth state locally
+      localStorage.setItem('authToken', 'mock-jwt-token-12345');
+      localStorage.setItem('user', JSON.stringify(mockUser));
+
+      onSignupSuccess(mockUser);
       setLoading(false);
-    }
+    }, 1000);
   };
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-clinical-bg dark:bg-clinical-bg-dark">
 
       {/* Visual Side */}
-      <div className="hidden lg:flex relative flex-col justify-center items-center p-12 bg-clinical-primary overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-gradient-to-br from-clinical-primary via-slate-900 to-clinical-teal-dark opacity-90"></div>
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581056771107-24ca5f033842?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none animate-pulse-slow"></div>
+      <div className="hidden lg:flex relative flex-col justify-center items-center p-12 bg-slate-900 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-clinical-teal-dark opacity-90"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-clinical-teal/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div className="relative z-10 max-w-lg text-center text-white">
-          <h2 className="text-3xl font-display font-bold mb-6 tracking-tight">
-            Join the <span className="text-cyan-400">Network</span>
-          </h2>
-          <p className="text-lg text-slate-300 leading-relaxed max-w-sm mx-auto">
-            Get access to real-time risk stratification and predictive analytics for better patient outcomes.
-          </p>
-
-          <div className="mt-12 grid grid-cols-2 gap-4 text-left">
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <h4 className="font-bold text-clinical-teal mb-1">State of the Art</h4>
-              <p className="text-xs text-slate-400">Ensemble models combining XGBoost, CatBoost, and LightGBM.</p>
+        <div className="relative z-10 max-w-lg text-center text-white space-y-8">
+          <h2 className="text-4xl font-display font-bold">Join the Network</h2>
+          <div className="grid gap-6 text-left">
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+              <h3 className="font-semibold text-clinical-teal mb-2">Advanced Analytics</h3>
+              <p className="text-slate-400 text-sm">Access SOTA ensemble models including BioMistral-7B, XGBoost, and CatBoost for precise risk stratification.</p>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <h4 className="font-bold text-clinical-teal mb-1">Explainable AI</h4>
-              <p className="text-xs text-slate-400">SHAP values provided for every single prediction.</p>
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+              <h3 className="font-semibold text-clinical-teal mb-2">Interpretable AI</h3>
+              <p className="text-slate-400 text-sm">Understand model decisions with SHAP values and counterfactual reasoning for every prediction.</p>
             </div>
           </div>
         </div>
@@ -130,138 +120,127 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onSwitchToLogin }) => 
       <div className="flex items-center justify-center p-6 sm:p-12 relative">
         <div className="w-full max-w-md space-y-6 animate-slide-up">
 
-          <button
-            onClick={onSwitchToLogin}
-            className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-clinical-teal transition-colors mb-4"
-          >
-            <ArrowLeft size={16} />
-            Back to Login
-          </button>
-
-          <div className="text-left mb-8">
+          <div className="text-center lg:text-left mb-8">
             <h2 className="text-3xl font-bold font-display text-slate-900 dark:text-white mb-2">Create Account</h2>
-            <div className="flex gap-2">
-              {[1, 2, 3].map(i => (
-                <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${step >= i ? 'w-8 bg-clinical-teal' : 'w-4 bg-slate-200 dark:bg-slate-700'}`}></div>
-              ))}
-            </div>
+            <p className="text-slate-500 dark:text-slate-400">Step {step} of 3</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
 
+            {/* Step 1: Personal Info */}
             {step === 1 && (
               <div className="space-y-4 animate-fade-in">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">First Name</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">First Name</label>
                     <input
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      placeholder="Jane"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal outline-none"
+                      placeholder="John"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Last Name</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Last Name</label>
                     <input
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal outline-none"
                       placeholder="Doe"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
                     />
                   </div>
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Email</label>
-                  <div className="relative group">
-                    <Mail className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 text-slate-400" size={18} />
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal outline-none"
                       placeholder="doctor@hospital.org"
-                      className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
-                      autoFocus
                     />
                   </div>
                 </div>
               </div>
             )}
 
+            {/* Step 2: Clinical Info */}
             {step === 2 && (
               <div className="space-y-4 animate-fade-in">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Specialty</label>
-                  <select
-                    name="specialty"
-                    value={formData.specialty}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white appearance-none cursor-pointer"
-                  >
-                    <option value="">Select Specialty...</option>
-                    <option value="cardiology">Cardiology</option>
-                    <option value="endocrinology">Endocrinology</option>
-                    <option value="nephrology">Nephrology</option>
-                    <option value="general">General Medicine</option>
-                  </select>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Specialty</label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 text-slate-400" size={18} />
+                    <select
+                      name="specialty"
+                      value={formData.specialty}
+                      onChange={handleInputChange}
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal outline-none appearance-none"
+                    >
+                      <option value="">Select Specialty</option>
+                      <option value="Cardiology">Cardiology</option>
+                      <option value="Endocrinology">Endocrinology</option>
+                      <option value="General Practice">General Practice</option>
+                      <option value="Internal Medicine">Internal Medicine</option>
+                    </select>
+                  </div>
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Hospital / Institution</label>
-                  <div className="relative group">
-                    <Building2 className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Hospital / Clinic</label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-3 text-slate-400" size={18} />
                     <input
-                      type="text"
                       name="hospital"
                       value={formData.hospital}
                       onChange={handleInputChange}
-                      placeholder="General Hospital"
-                      className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal outline-none"
+                      placeholder="Medical Center Name"
                     />
                   </div>
                 </div>
               </div>
             )}
 
+            {/* Step 3: Security */}
             {step === 3 && (
               <div className="space-y-4 animate-fade-in">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Password</label>
-                  <div className="relative group">
-                    <Lock className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 text-slate-400" size={18} />
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      placeholder="Min 8 characters"
-                      className="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-10 pr-10 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal outline-none"
+                      placeholder="••••••••"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Confirm Password</label>
-                  <div className="relative group">
-                    <Lock className="absolute left-3.5 top-3.5 text-slate-400 group-focus-within:text-clinical-teal transition-colors" size={20} />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Confirm Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 text-slate-400" size={18} />
                     <input
                       type="password"
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
-                      placeholder="Repeat password"
-                      className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-clinical-teal/50 focus:border-clinical-teal transition-all dark:text-white"
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-clinical-teal outline-none"
+                      placeholder="••••••••"
                     />
                   </div>
                 </div>
@@ -269,40 +248,57 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onSwitchToLogin }) => 
             )}
 
             {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+              <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 text-sm flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
                 {error}
               </div>
             )}
 
-            <div className="pt-2">
+            <div className="flex gap-4 pt-4">
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={prevStep}
+                  className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold py-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                >
+                  Back
+                </button>
+              )}
+
               {step < 3 ? (
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="w-full py-4 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-bold rounded-xl shadow-lg transform active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                  className="flex-1 bg-clinical-teal hover:bg-clinical-teal-dark text-white font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
                 >
-                  Next Step
-                  <ArrowRight size={18} />
+                  Next <ArrowRight size={18} />
                 </button>
               ) : (
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-clinical-teal to-clinical-teal-dark hover:from-teal-500 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg shadow-clinical-teal/20 transform active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-clinical-teal to-cyan-600 hover:from-clinical-teal-dark hover:to-cyan-700 text-white font-semibold py-2.5 rounded-xl shadow-lg transition-all relative overflow-hidden"
                 >
                   {loading ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Creating Account...</span>
-                    </>
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Creating Account...
+                    </span>
                   ) : (
-                    'Create Account'
+                    "Create Account"
                   )}
                 </button>
               )}
             </div>
+
           </form>
+
+          <div className="text-center text-sm text-slate-500 font-medium">
+            Already have an account?{' '}
+            <button onClick={onSwitchToLogin} className="text-clinical-teal hover:underline cursor-pointer">
+              Sign In
+            </button>
+          </div>
         </div>
       </div>
     </div>
