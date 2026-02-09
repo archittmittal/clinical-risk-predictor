@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, User, ArrowRight, ShieldCheck } from 'lucide-react';
-import { login } from '../api/client';
+
 
 interface LoginProps {
   onLoginSuccess: (user: { email: string; name: string }) => void;
