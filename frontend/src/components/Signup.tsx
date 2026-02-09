@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Building2, Eye, EyeOff, ArrowLeft, ArrowRight, User } from 'lucide-react';
+import { Mail, Lock, Building2, Eye, EyeOff, ArrowRight, User } from 'lucide-react';
 
 interface SignupProps {
   onSignupSuccess: (user: { email: string; name: string; specialty: string }) => void;
