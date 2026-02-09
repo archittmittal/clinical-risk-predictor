@@ -313,9 +313,16 @@ class PDFService:
         pdf.section_title("CLINICAL RECOMMENDATIONS")
         
         # Split LLM Summary Logic
-        # Expected format: "**1. Clinical Assessment** ... **2. Recommendations** ..."
-        parts = llm_summary.split('**2. Recommendations**')
-        assessment_text = parts[0].replace('**1. Clinical Assessment**', '').strip()
+        # Try different delimiters for robustness
+        parts = []
+        if '**2. Recommendations**' in llm_summary:
+            parts = llm_summary.split('**2. Recommendations**')
+        elif '**Recommendations:**' in llm_summary:
+            parts = llm_summary.split('**Recommendations:**')
+        else:
+            parts = [llm_summary] # Fallback
+            
+        assessment_text = parts[0].replace('**1. Clinical Assessment**', '').replace('**Clinical Validation (Simulated):**', '').strip()
         actions_text = parts[1].strip() if len(parts) > 1 else ""
         
         # Assessment
@@ -337,7 +344,7 @@ class PDFService:
                 line = line.strip()
                 if not line: continue
                 # Remove bullets
-                clean = line.lstrip('-').lstrip('•').strip()
+                clean = line.lstrip('-').lstrip('•').lstrip('1.').lstrip('2.').lstrip('3.').strip()
                 
                 # Draw Box/Icon placeholder
                 x = pdf.get_x()
