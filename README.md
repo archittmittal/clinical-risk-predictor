@@ -1017,10 +1017,10 @@ Production setup, Docker guide
 
 ### 🌟 Acknowledgments
 
-Built with ❤️ for **Praxis Hackathon 2025**
+Built with ❤️ for **Hack for Green Bharat**
 
 Special thanks to:
-- 🏆 Praxis 2.0 Organizing Committee
+- 🏆 Hack for Green Hackathon
 - 🏥 Healthcare domain experts
 - 🤖 Open-source ML/AI community
 - 👥 Our amazing team members
@@ -1036,6 +1036,6 @@ Special thanks to:
 
 ---
 
-**Last Updated**: January 2025 | **Version**: 1.0.0 | **Status**: 🚧 In Active Development
+**Last Updated**: February 2025 | **Version**: 1.0.0 | **Status**: 🚧 In Active Development
 
 </div>
